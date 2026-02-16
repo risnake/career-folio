@@ -1,0 +1,223 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const dos = [
+  'Use action verbs to describe your experiences',
+  'Quantify results whenever possible',
+  'Keep your resume brief (1–2 pages)',
+  'Use quality resume paper for printed copies',
+  'Include a cover letter with your application',
+  'Have others review for grammar and spelling',
+];
+
+const donts = [
+  'Use margins smaller than 1 inch',
+  'Use a font size smaller than 10pt',
+  'Use personal pronouns (I, me, we)',
+  'Include personal information or photos',
+  'Write "References available upon request"',
+];
+
+const exampleObjectives = [
+  'To obtain a summer internship in the biotech industry where I can apply my coursework in molecular biology and laboratory techniques.',
+  'Seeking a full-time position in management consulting that utilizes my analytical skills and business experience.',
+  'To secure a software engineering role at a mission-driven organization where I can leverage my experience in full-stack development and data systems.',
+];
+
+const formats = [
+  {
+    name: 'Chronological',
+    description: 'The most common format. Lists experience in reverse chronological order, starting with the most recent position. Best for candidates with a strong, direct work history in their field.',
+  },
+  {
+    name: 'Functional',
+    description: 'Focuses on skills and abilities rather than a sequential work history. Groups experience by function or skill area. Ideal for career changers, those with gaps, or candidates whose strongest experience is non-traditional.',
+  },
+  {
+    name: 'Combination',
+    description: 'A hybrid of chronological and functional formats. Groups experience by skill area but lists positions in reverse chronological order within each group. Offers flexibility while maintaining a clear timeline.',
+  },
+];
+---
+
+<Layout title="Resume Guide">
+  <!-- Page Header -->
+  <section class="py-16 px-4 bg-white">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-bold text-slate-900 mb-2">Resume Guide</h1>
+      <div class="w-16 h-1 bg-amber-600 rounded mb-12"></div>
+
+      <!-- What is a Resume? -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">What is a Resume?</h2>
+        <p class="text-slate-700 leading-relaxed mb-4">
+          A resume is a brief summary of your qualifications, education, and experiences relevant
+          to your career objective. It is your primary marketing document in a job search.
+        </p>
+        <div class="bg-amber-50 border-l-4 border-amber-600 p-4 rounded-r-lg">
+          <p class="text-slate-800 font-medium">
+            Employers typically spend less than 30 seconds reviewing a resume.
+            Your goal is to make an impression strong enough to secure an interview.
+          </p>
+        </div>
+      </div>
+
+      <!-- Standard Resume Sections -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-slate-900 mb-8">Standard Resume Sections</h2>
+
+        <!-- Header Info -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-slate-900 mb-3">Header Information</h3>
+          <p class="text-slate-700 leading-relaxed mb-3">
+            Your header should be prominently placed at the top and include:
+          </p>
+          <ul class="list-disc list-inside text-slate-700 space-y-1 ml-2">
+            <li>Full name</li>
+            <li>Email address (professional)</li>
+            <li>Phone number</li>
+            <li>Mailing address (city and state at minimum)</li>
+            <li>LinkedIn profile URL</li>
+          </ul>
+        </div>
+
+        <!-- Objective -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-slate-900 mb-3">Objective <span class="text-sm font-normal text-slate-500">(Optional)</span></h3>
+          <p class="text-slate-700 leading-relaxed mb-4">
+            A concise statement of your career goal. Include the specific position you seek,
+            the skills you bring, and the field or industry you're targeting. Not all resumes
+            need an objective — consider whether it adds value for your situation.
+          </p>
+          <div class="space-y-3">
+            {exampleObjectives.map((obj) => (
+              <blockquote class="border-l-4 border-slate-300 pl-4 py-2 bg-slate-50 rounded-r-lg">
+                <p class="text-slate-600 italic text-sm">{obj}</p>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+
+        <!-- Education -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-slate-900 mb-3">Education</h3>
+          <p class="text-slate-700 leading-relaxed mb-3">
+            List your educational background with the most recent degree first. Include:
+          </p>
+          <ul class="list-disc list-inside text-slate-700 space-y-1 ml-2">
+            <li>Institution name and location</li>
+            <li>Degree earned and major/minor</li>
+            <li>Graduation date (or expected date)</li>
+            <li>GPA (if 3.0 or above)</li>
+            <li>Relevant coursework, honors, or academic awards</li>
+            <li>Study abroad or overseas experience</li>
+          </ul>
+        </div>
+
+        <!-- Experience -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-slate-900 mb-3">Experience</h3>
+          <p class="text-slate-700 leading-relaxed mb-3">
+            Describe your relevant experience using action verbs and measurable results.
+            Each entry should include:
+          </p>
+          <ul class="list-disc list-inside text-slate-700 space-y-1 ml-2">
+            <li>Job title</li>
+            <li>Organization name and location</li>
+            <li>Dates of employment</li>
+            <li>Bullet points describing your responsibilities and accomplishments</li>
+          </ul>
+          <p class="text-slate-700 leading-relaxed mt-3">
+            Experience can include paid employment, internships, volunteer work, academic projects,
+            and leadership roles in organizations.
+          </p>
+        </div>
+
+        <!-- Additional -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-slate-900 mb-3">Additional Information</h3>
+          <p class="text-slate-700 leading-relaxed mb-3">
+            This optional section can include:
+          </p>
+          <ul class="list-disc list-inside text-slate-700 space-y-1 ml-2">
+            <li>Computer and technical skills</li>
+            <li>Languages (indicate proficiency level)</li>
+            <li>Volunteer work and community involvement</li>
+            <li>Professional memberships</li>
+            <li>Relevant interests or hobbies</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Resume Formats -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-slate-900 mb-8">Resume Formats</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {formats.map((format) => (
+            <div class="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h3 class="text-lg font-semibold text-slate-900 mb-3">{format.name}</h3>
+              <p class="text-slate-600 text-sm leading-relaxed">{format.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Do's and Don'ts -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-slate-900 mb-8">Do's and Don'ts</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Do's -->
+          <div class="bg-green-50 rounded-xl p-6 border border-green-200">
+            <h3 class="text-lg font-semibold text-green-800 mb-4">Do's</h3>
+            <ul class="space-y-3">
+              {dos.map((item) => (
+                <li class="flex items-start gap-3">
+                  <span class="text-green-600 font-bold mt-0.5 shrink-0">&#10003;</span>
+                  <span class="text-slate-700 text-sm">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Don'ts -->
+          <div class="bg-red-50 rounded-xl p-6 border border-red-200">
+            <h3 class="text-lg font-semibold text-red-800 mb-4">Don'ts</h3>
+            <ul class="space-y-3">
+              {donts.map((item) => (
+                <li class="flex items-start gap-3">
+                  <span class="text-red-600 font-bold mt-0.5 shrink-0">&#10007;</span>
+                  <span class="text-slate-700 text-sm">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Submission Tips -->
+      <div class="mb-8">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Email Submission Tips</h2>
+        <div class="bg-slate-50 rounded-xl p-6 border border-slate-200">
+          <ul class="space-y-3 text-slate-700 text-sm">
+            <li class="flex items-start gap-3">
+              <span class="text-amber-600 font-bold mt-0.5 shrink-0">&bull;</span>
+              <span>Send your resume as a <strong>PDF attachment</strong> and paste a plain-text version in the email body as a backup.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-amber-600 font-bold mt-0.5 shrink-0">&bull;</span>
+              <span>Name your files clearly: <code class="bg-slate-200 px-1.5 py-0.5 rounded text-xs">LastName_FirstName_Resume.pdf</code></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-amber-600 font-bold mt-0.5 shrink-0">&bull;</span>
+              <span>Keep formatting simple in the email body — avoid tables, columns, and special characters that may not render correctly.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-amber-600 font-bold mt-0.5 shrink-0">&bull;</span>
+              <span>Use a professional subject line that includes the position title and your name.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,162 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const sections = [
+  {
+    num: "01",
+    title: "Resume Guide",
+    href: "/resume-guide",
+    desc: "Fundamentals, formats, and best practices for crafting resumes that earn interviews.",
+    badge: "Essentials",
+    badgeClass: "badge-terracotta",
+  },
+  {
+    num: "02",
+    title: "Action Verbs",
+    href: "/action-verbs",
+    desc: "Over 200 powerful verbs organized by skill area to strengthen your bullet points.",
+    badge: "Reference",
+    badgeClass: "badge-forest",
+  },
+  {
+    num: "03",
+    title: "Sample Resumes",
+    href: "/samples",
+    desc: "14 annotated examples spanning business, science, engineering, arts, and policy.",
+    badge: "Examples",
+    badgeClass: "badge-terracotta",
+  },
+  {
+    num: "04",
+    title: "Cover Letters",
+    href: "/cover-letters",
+    desc: "Structure, strategy, and six complete samples for every application scenario.",
+    badge: "Essentials",
+    badgeClass: "badge-terracotta",
+  },
+  {
+    num: "05",
+    title: "Resources",
+    href: "/resources",
+    desc: "Curated books, guides, and reference formatting tips from career experts.",
+    badge: "Reference",
+    badgeClass: "badge-forest",
+  },
+  {
+    num: "06",
+    title: "Resume Builder",
+    href: "/builder",
+    desc: "Build your resume step-by-step with AI-powered suggestions and export to PDF or DOCX.",
+    badge: "New",
+    badgeClass: "badge-forest",
+  },
+];
+
+const stats = [
+  { value: "14", label: "Sample Resumes", detail: "Across 8 fields" },
+  { value: "200+", label: "Action Verbs", detail: "In 11 categories" },
+  { value: "6", label: "Cover Letters", detail: "Real-world samples" },
+];
+---
+
+<Layout title="Home">
+  <!-- Hero -->
+  <section class="relative overflow-hidden grain">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8 pt-24 pb-20 md:pt-32 md:pb-28">
+      <div class="max-w-3xl">
+        <p class="label-sm text-terracotta mb-6 reveal">Stanford Career Center</p>
+        <h1 class="text-5xl md:text-6xl font-bold text-ink mb-8 tracking-tight reveal">
+          Your career<br />starts on paper.
+        </h1>
+        <hr class="rule-accent mb-8 reveal" />
+        <p class="text-lg text-muted leading-relaxed max-w-xl reveal">
+          Everything you need to present yourself effectively to employers
+          — from first draft to final polish.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-4 reveal">
+          <a
+            href="/resume-guide"
+            class="inline-flex items-center gap-2 bg-terracotta text-white px-6 py-3 text-sm font-medium tracking-wide hover:bg-terracotta/90 transition-colors"
+          >
+            Start with the Guide
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </a>
+          <a
+            href="/samples"
+            class="inline-flex items-center gap-2 border border-rule text-ink px-6 py-3 text-sm font-medium tracking-wide hover:border-ink transition-colors"
+          >
+            Browse Samples
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="border-y border-rule bg-cream/50">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 stagger">
+        {stats.map((stat) => (
+          <div class="text-center reveal">
+            <p class="text-5xl font-bold text-terracotta">{stat.value}</p>
+            <p class="text-sm font-semibold text-ink mt-2">{stat.label}</p>
+            <p class="text-xs text-muted mt-1">{stat.detail}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Insight -->
+  <section>
+    <div class="mx-auto max-w-6xl px-6 lg:px-8 py-16">
+      <div class="callout max-w-2xl reveal">
+        <p class="label-sm text-terracotta mb-2">The 30-Second Rule</p>
+        <p class="text-ink leading-relaxed">
+          Employers typically spend less than 30 seconds reviewing a resume.
+          Your goal is to make an impression strong enough to secure an interview.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sections -->
+  <section class="pb-24">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8">
+      <div class="mb-12 reveal">
+        <p class="label-sm text-muted mb-3">What's Inside</p>
+        <h2 class="text-3xl md:text-4xl font-bold text-ink">Six chapters.<br />One complete toolkit.</h2>
+      </div>
+
+      <div class="space-y-4 stagger">
+        {sections.map((s) => (
+          <a href={s.href} class="group paper-card block rounded-sm px-8 py-7 reveal">
+            <div class="flex items-center gap-6 md:gap-10">
+              <span class="text-4xl font-bold text-cream hidden sm:block">{s.num}</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3 mb-1.5">
+                  <h3 class="text-xl md:text-2xl font-bold text-ink group-hover:text-terracotta transition-colors">
+                    {s.title}
+                  </h3>
+                  <span class={`${s.badgeClass} hidden md:inline-block`}>{s.badge}</span>
+                </div>
+                <p class="text-muted text-sm leading-relaxed max-w-lg">{s.desc}</p>
+              </div>
+              <svg
+                class="w-5 h-5 text-rule group-hover:text-terracotta transition-all group-hover:translate-x-1 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

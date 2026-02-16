@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ActionVerbBrowser from '../components/ActionVerbBrowser.tsx';
+---
+
+<Layout title="Action Verbs">
+  <section class="py-16 px-4 bg-white">
+    <div class="max-w-5xl mx-auto">
+      <h1 class="text-4xl font-bold text-slate-900 mb-2">Action Verbs</h1>
+      <div class="w-16 h-1 bg-amber-600 rounded mb-8"></div>
+      <p class="text-slate-700 leading-relaxed mb-12 max-w-3xl">
+        Strong action verbs make your resume stand out. Use these verbs to describe your
+        accomplishments and experiences. Search or filter by category to find the perfect
+        words for your resume.
+      </p>
+      <ActionVerbBrowser client:load />
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,93 @@
+---
+const currentPath = Astro.url.pathname;
+
+const links = [
+  { label: "Guide", href: "/resume-guide" },
+  { label: "Action Verbs", href: "/action-verbs" },
+  { label: "Samples", href: "/samples" },
+  { label: "Cover Letters", href: "/cover-letters" },
+  { label: "Resources", href: "/resources" },
+  { label: "Builder", href: "/builder" },
+];
+
+function isActive(href: string): boolean {
+  if (href === "/") return currentPath === "/";
+  return currentPath.startsWith(href);
+}
+---
+
+<nav class="sticky top-0 z-50 bg-paper/90 backdrop-blur-md border-b border-rule">
+  <div class="mx-auto max-w-6xl px-6 lg:px-8">
+    <div class="flex h-14 items-center justify-between">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 group">
+        <span class="font-display text-xl tracking-tight text-ink">The Career Folio</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <div class="hidden md:flex items-center gap-1">
+        {links.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "link-underline px-3 py-2 text-[0.8rem] font-medium tracking-wide transition-colors",
+              isActive(link.href)
+                ? "text-terracotta"
+                : "text-muted hover:text-ink",
+            ]}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button
+        id="mobile-menu-btn"
+        class="md:hidden p-2 text-muted hover:text-ink transition-colors"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+      >
+        <svg id="menu-icon-open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+        </svg>
+        <svg id="menu-icon-close" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-rule bg-paper">
+    <div class="px-6 py-4 space-y-1">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class:list={[
+            "block px-3 py-2.5 text-sm font-medium transition-colors",
+            isActive(link.href)
+              ? "text-terracotta"
+              : "text-muted hover:text-ink",
+          ]}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+
+<script>
+  const btn = document.getElementById("mobile-menu-btn");
+  const menu = document.getElementById("mobile-menu");
+  const iconOpen = document.getElementById("menu-icon-open");
+  const iconClose = document.getElementById("menu-icon-close");
+
+  btn?.addEventListener("click", () => {
+    const isOpen = menu?.classList.toggle("hidden") === false;
+    iconOpen?.classList.toggle("hidden", isOpen);
+    iconClose?.classList.toggle("hidden", !isOpen);
+    btn.setAttribute("aria-expanded", String(isOpen));
+  });
+</script>

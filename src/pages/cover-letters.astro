@@ -1,0 +1,163 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { coverLetters } from '../data/coverLetters';
+
+const dos = [
+  'Spend time collecting your thoughts and drafting carefully',
+  'Use a strong, confident closing statement',
+  'Limit your letter to one page',
+  'Personalize each letter for the specific position and company',
+  'Check spelling and grammar thoroughly',
+  'Sign your letter personally when submitting a hard copy',
+];
+
+const donts = [
+  "Don't copy someone else's cover letter verbatim",
+  "Remember to change company and position names if reusing a template",
+  "Don't mark letters as \"personal and confidential\"",
+];
+---
+
+<Layout title="Cover Letters">
+  <!-- Page Header -->
+  <section class="py-16 px-4 bg-white">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-bold text-slate-900 mb-2">Cover Letters</h1>
+      <div class="w-16 h-1 bg-amber-600 rounded mb-12"></div>
+
+      <!-- Writing Guide -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Writing Effective Cover Letters</h2>
+        <p class="text-slate-700 leading-relaxed mb-8">
+          A cover letter introduces you to a potential employer, states your objective,
+          personalizes your resume, and highlights the qualifications that make you uniquely
+          suited for the position. It is your opportunity to demonstrate genuine interest
+          in the organization and make a memorable first impression.
+        </p>
+
+        <div class="space-y-6 mb-8">
+          <div class="bg-slate-50 rounded-xl p-6 border border-slate-200">
+            <h3 class="text-lg font-semibold text-slate-900 mb-2">Opening Paragraph</h3>
+            <p class="text-slate-700 text-sm leading-relaxed">
+              State your intent and the specific position you are applying for. Mention how you
+              learned about the opportunity. Briefly introduce yourself and your most relevant
+              qualification to capture the reader's attention.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-6 border border-slate-200">
+            <h3 class="text-lg font-semibold text-slate-900 mb-2">Body Paragraph</h3>
+            <p class="text-slate-700 text-sm leading-relaxed">
+              Detail your qualifications and explain why you are interested in this particular
+              organization. Highlight relevant skills and experiences that match the position
+              requirements. Demonstrate your knowledge of the organization and how you can
+              contribute to its mission.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-6 border border-slate-200">
+            <h3 class="text-lg font-semibold text-slate-900 mb-2">Closing Paragraph</h3>
+            <p class="text-slate-700 text-sm leading-relaxed">
+              Outline your plan of action — state that you will follow up and provide a
+              timeline. Thank the reader for their time and consideration. Express
+              enthusiasm for the opportunity to discuss your qualifications further.
+            </p>
+          </div>
+        </div>
+
+        <!-- Important Tip -->
+        <div class="bg-amber-50 border-l-4 border-amber-600 p-4 rounded-r-lg">
+          <p class="text-slate-800 text-sm font-medium">
+            Always address your cover letter to a specific person. If you don't have a name,
+            call the department to find out. A personalized salutation shows initiative and
+            attention to detail.
+          </p>
+        </div>
+      </div>
+
+      <!-- Do's and Don'ts -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-slate-900 mb-8">Tips for Cover Letters</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Do's -->
+          <div class="bg-green-50 rounded-xl p-6 border border-green-200">
+            <h3 class="text-lg font-semibold text-green-800 mb-4">Do's</h3>
+            <ul class="space-y-3">
+              {dos.map((item) => (
+                <li class="flex items-start gap-3">
+                  <span class="text-green-600 font-bold mt-0.5 shrink-0">&#10003;</span>
+                  <span class="text-slate-700 text-sm">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Don'ts -->
+          <div class="bg-red-50 rounded-xl p-6 border border-red-200">
+            <h3 class="text-lg font-semibold text-red-800 mb-4">Don'ts</h3>
+            <ul class="space-y-3">
+              {donts.map((item) => (
+                <li class="flex items-start gap-3">
+                  <span class="text-red-600 font-bold mt-0.5 shrink-0">&#10007;</span>
+                  <span class="text-slate-700 text-sm">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sample Cover Letters -->
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900 mb-8">Sample Cover Letters</h2>
+        <div class="space-y-12">
+          {coverLetters.map((letter) => (
+            <article class="bg-white rounded-lg shadow-sm border border-slate-200 p-8 max-w-3xl mx-auto">
+              {/* Type badge */}
+              <div class="mb-6">
+                <span class="inline-block bg-amber-100 text-amber-800 text-xs font-medium px-3 py-1 rounded-full">
+                  {letter.type}
+                </span>
+              </div>
+
+              {/* Letter content - styled as a formal business letter */}
+              <div class="font-serif text-slate-800 leading-relaxed">
+                {/* Sender info */}
+                <div class="text-sm mb-6">
+                  <p>{letter.senderInfo}</p>
+                </div>
+
+                {/* Date */}
+                <p class="text-sm mb-6">{letter.date}</p>
+
+                {/* Recipient */}
+                <div class="text-sm mb-6">
+                  <p>{letter.recipientName}</p>
+                  {letter.recipientTitle && <p>{letter.recipientTitle}</p>}
+                  <p>{letter.company}</p>
+                  {letter.recipientAddress && <p>{letter.recipientAddress}</p>}
+                </div>
+
+                {/* Salutation */}
+                <p class="mb-4">{letter.salutation}</p>
+
+                {/* Body paragraphs */}
+                <div class="space-y-4">
+                  {letter.paragraphs.map((para) => (
+                    <p class="text-sm">{para}</p>
+                  ))}
+                </div>
+
+                {/* Closing */}
+                <div class="mt-6">
+                  <p class="text-sm">{letter.closing}</p>
+                  <p class="text-sm mt-6 font-semibold">{letter.author}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

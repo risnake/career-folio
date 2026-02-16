@@ -1,0 +1,163 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const resumeResources = [
+  {
+    title: 'From College to Career: Entry-level Resumes for Any Major',
+    author: 'Donald Asher',
+    note: 'Practical guide covering resume writing for all majors, with strategies for new graduates entering the workforce.',
+  },
+  {
+    title: 'The Google Resume',
+    author: 'Gayle Laakmann McDowell',
+    note: 'Insights on how to craft resumes that stand out at top tech companies. Available as an electronic resource.',
+    tag: 'E-Resource',
+  },
+  {
+    title: "Knock 'em Dead Resumes",
+    author: 'Martin Yate',
+    note: 'A comprehensive guide to writing killer resumes with templates and examples for a variety of industries.',
+  },
+  {
+    title: 'Vault Guide to Resumes, Cover Letters, and Interviewing',
+    author: 'Vault',
+    note: 'Covers the full job application process from resume writing through interviewing with insider tips.',
+  },
+];
+
+const coverLetterResources = [
+  {
+    title: "Cover Letters That Knock 'em Dead",
+    author: 'Martin Yate',
+    note: 'Templates and strategies for writing cover letters that get results across industries.',
+  },
+  {
+    title: '201 Dynamite Job Search Letters',
+    author: 'Ronald L. Krannich & Caryl Rae Krannich',
+    note: 'Extensive collection of job search correspondence including cover letters, follow-up letters, and thank-you notes.',
+  },
+  {
+    title: 'Vault Guide to Resumes, Cover Letters & Interviewing',
+    author: 'Howard Leifman et al.',
+    note: 'Comprehensive resource covering the entire application process with practical examples.',
+  },
+];
+
+const referenceExamples = [
+  {
+    name: 'Dr. Jan Smith',
+    role: 'Professor, Department of English',
+    org: 'Stanford University',
+    address: '450 Serra Mall, Stanford, CA 94305',
+    phone: '(650) 555-1234',
+    email: 'jsmith@stanford.edu',
+  },
+  {
+    name: 'Mr. Jerome Titan',
+    role: 'Senior Scientist',
+    org: 'Genentech, Inc.',
+    address: '1 DNA Way, South San Francisco, CA 94080',
+    phone: '(650) 555-5678',
+    email: 'jtitan@gene.com',
+  },
+  {
+    name: 'Ms. Vanessa James',
+    role: 'Store Manager',
+    org: 'The Gap',
+    address: '100 University Ave, Palo Alto, CA 94301',
+    phone: '(650) 555-9012',
+    email: 'vjames@gap.com',
+  },
+];
+---
+
+<Layout title="Resources">
+  <section class="py-16 px-4 bg-white">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-bold text-slate-900 mb-2">Resources</h1>
+      <div class="w-16 h-1 bg-amber-600 rounded mb-12"></div>
+
+      <!-- Resume Resources -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">Resume Resources</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {resumeResources.map((resource) => (
+            <div class="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <h3 class="text-base font-semibold text-slate-900 leading-snug">{resource.title}</h3>
+                {resource.tag && (
+                  <span class="inline-block bg-amber-100 text-amber-800 text-xs font-medium px-2 py-0.5 rounded-full shrink-0">
+                    {resource.tag}
+                  </span>
+                )}
+              </div>
+              <p class="text-sm text-amber-700 font-medium mb-2">{resource.author}</p>
+              <p class="text-sm text-slate-600 leading-relaxed">{resource.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Cover Letter Resources -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">Cover Letter Resources</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {coverLetterResources.map((resource) => (
+            <div class="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h3 class="text-base font-semibold text-slate-900 leading-snug mb-2">{resource.title}</h3>
+              <p class="text-sm text-amber-700 font-medium mb-2">{resource.author}</p>
+              <p class="text-sm text-slate-600 leading-relaxed">{resource.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Reference List Tips -->
+      <div class="mb-8">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">Reference List Tips</h2>
+        <div class="bg-slate-50 rounded-xl p-6 border border-slate-200 mb-8">
+          <ul class="space-y-3">
+            <li class="flex items-start gap-3 text-slate-700 text-sm">
+              <span class="text-amber-600 font-bold mt-0.5 shrink-0">&bull;</span>
+              <span>List your references on a <strong>separate sheet of paper</strong> with the same header as your resume.</span>
+            </li>
+            <li class="flex items-start gap-3 text-slate-700 text-sm">
+              <span class="text-amber-600 font-bold mt-0.5 shrink-0">&bull;</span>
+              <span>References are typically requested at the <strong>finalist stage</strong> of the hiring process.</span>
+            </li>
+            <li class="flex items-start gap-3 text-slate-700 text-sm">
+              <span class="text-amber-600 font-bold mt-0.5 shrink-0">&bull;</span>
+              <span><strong>Contact your references</strong> before submitting their names to ensure they are willing and prepared to speak on your behalf.</span>
+            </li>
+            <li class="flex items-start gap-3 text-slate-700 text-sm">
+              <span class="text-amber-600 font-bold mt-0.5 shrink-0">&bull;</span>
+              <span>Include 3–5 references with their name, title, organization, address, phone number, and email.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sample Reference Format -->
+        <h3 class="text-lg font-semibold text-slate-900 mb-4">Sample Reference Format</h3>
+        <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-8">
+          <div class="text-center mb-8">
+            <p class="text-lg font-bold text-slate-900">REFERENCES</p>
+          </div>
+          <div class="space-y-6">
+            {referenceExamples.map((ref) => (
+              <div class="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                <p class="font-semibold text-slate-900">{ref.name}</p>
+                <p class="text-sm text-slate-600">{ref.role}</p>
+                <p class="text-sm text-slate-600">{ref.org}</p>
+                <p class="text-sm text-slate-500">{ref.address}</p>
+                <div class="flex flex-wrap gap-4 mt-1">
+                  <p class="text-sm text-slate-500">{ref.phone}</p>
+                  <p class="text-sm text-slate-500">{ref.email}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
