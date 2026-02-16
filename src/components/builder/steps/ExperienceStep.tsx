@@ -1,9 +1,67 @@
+import { useState } from 'react';
 import type { Dispatch } from 'react';
 import type { ResumeSection, ExperienceItem } from '../../../data/resumes';
 import type { BuilderAction, AISuggestion } from '../../../lib/builderTypes';
 import FormField from '../shared/FormField';
 import DynamicList from '../shared/DynamicList';
 import BulletEditor from '../shared/BulletEditor';
+
+function DateRangeInput({ dates, onChange, namePrefix }: { dates: string; onChange: (dates: string) => void; namePrefix: string }) {
+  const parts = dates.split(' - ');
+  const [start, setStart] = useState(parts[0] || '');
+  const [end, setEnd] = useState(parts[1] || '');
+  const [isPresent, setIsPresent] = useState((parts[1] || '').toLowerCase() === 'present');
+
+  const commit = (s: string, e: string, present: boolean) => {
+    const endVal = present ? 'Present' : e;
+    if (s && endVal) {
+      onChange(`${s} - ${endVal}`);
+    } else if (s) {
+      onChange(s);
+    } else {
+      onChange('');
+    }
+  };
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Dates</label>
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <input
+            name={`${namePrefix}-start`}
+            type="text"
+            value={start}
+            onChange={(e) => { setStart(e.target.value); commit(e.target.value, end, isPresent); }}
+            placeholder="MM/YYYY"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <p className="mt-0.5 text-xs text-gray-400">Start date</p>
+        </div>
+        <div>
+          <input
+            name={`${namePrefix}-end`}
+            type="text"
+            value={isPresent ? 'Present' : end}
+            onChange={(e) => { setEnd(e.target.value); commit(start, e.target.value, false); setIsPresent(false); }}
+            disabled={isPresent}
+            placeholder="MM/YYYY"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+          />
+          <label className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
+            <input
+              type="checkbox"
+              checked={isPresent}
+              onChange={(e) => { setIsPresent(e.target.checked); setEnd(e.target.checked ? 'Present' : ''); commit(start, '', e.target.checked); }}
+              className="rounded border-gray-300"
+            />
+            Present
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface ExperienceStepProps {
   experienceSections: ResumeSection[];
@@ -38,12 +96,15 @@ export default function ExperienceStep({
   return (
     <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Experience</h2>
+      <p className="text-sm text-gray-500 mb-4">
+        Organize your experience into sections (e.g. Work Experience, Leadership). Each section contains individual positions.
+      </p>
 
       <DynamicList
         items={experienceSections}
         onAdd={() => dispatch({ type: 'ADD_EXPERIENCE_SECTION' })}
         onRemove={(index) => dispatch({ type: 'REMOVE_EXPERIENCE_SECTION', index })}
-        addLabel="Add section"
+        addLabel="Add another section (e.g. Leadership, Research)"
         renderItem={(section, sectionIndex) => (
           <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-4">
             <FormField
@@ -54,6 +115,18 @@ export default function ExperienceStep({
               error={errors[`experienceSections.${sectionIndex}.title`]}
               placeholder="e.g. Work Experience, Leadership, Research"
             />
+            <div className="flex flex-wrap gap-1.5 mt-1.5">
+              {['Work Experience', 'Professional Experience', 'Leadership', 'Research Experience', 'Volunteer Experience', 'Projects'].map((title) => (
+                <button
+                  key={title}
+                  type="button"
+                  onClick={() => updateSection(sectionIndex, { title })}
+                  className="text-xs px-2 py-0.5 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-200 hover:border-gray-400 transition-colors"
+                >
+                  {title}
+                </button>
+              ))}
+            </div>
 
             <div className="space-y-4 pl-4 border-l-2 border-gray-200">
               <DynamicList
@@ -62,12 +135,12 @@ export default function ExperienceStep({
                 onRemove={(itemIndex) =>
                   dispatch({ type: 'REMOVE_EXPERIENCE_ITEM', sectionIndex, itemIndex })
                 }
-                addLabel="Add item"
+                addLabel="Add position"
                 renderItem={(item, itemIndex) => (
                   <div className="space-y-3 p-3 border border-gray-100 rounded-lg bg-white">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <FormField
-                        label="Title"
+                        label="Position Title"
                         name={`exp-title-${sectionIndex}-${itemIndex}`}
                         value={item.title}
                         onChange={(e) =>
@@ -76,7 +149,7 @@ export default function ExperienceStep({
                         placeholder="Software Engineer"
                       />
                       <FormField
-                        label="Organization"
+                        label="Organization / Company"
                         name={`exp-org-${sectionIndex}-${itemIndex}`}
                         value={item.organization}
                         onChange={(e) =>
@@ -85,7 +158,7 @@ export default function ExperienceStep({
                         placeholder="Acme Corp"
                       />
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
                       <FormField
                         label="Location"
                         name={`exp-loc-${sectionIndex}-${itemIndex}`}
@@ -95,16 +168,13 @@ export default function ExperienceStep({
                         }
                         placeholder="San Francisco, CA"
                       />
-                      <FormField
-                        label="Dates"
-                        name={`exp-dates-${sectionIndex}-${itemIndex}`}
-                        value={item.dates}
-                        onChange={(e) =>
-                          updateItem(sectionIndex, itemIndex, { dates: e.target.value })
-                        }
-                        placeholder="6/2022 - Present"
-                      />
+                      <p className="mt-0.5 text-xs text-gray-400">e.g. City, State or City, Country</p>
                     </div>
+                    <DateRangeInput
+                      dates={item.dates}
+                      onChange={(dates) => updateItem(sectionIndex, itemIndex, { dates })}
+                      namePrefix={`exp-dates-${sectionIndex}-${itemIndex}`}
+                    />
 
                     <BulletEditor
                       bullets={item.bullets}

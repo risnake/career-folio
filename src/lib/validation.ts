@@ -57,7 +57,7 @@ export function validateStep(step: number, state: BuilderState): ValidationResul
     case 4:
       state.experienceSections.forEach((section, i) => {
         if (!section.title.trim()) {
-          errors[`section.${i}.title`] = 'Section title is required';
+          errors[`experienceSections.${i}.title`] = 'Section title is required';
         }
       });
       break;

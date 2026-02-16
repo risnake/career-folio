@@ -52,7 +52,7 @@ export default function ResumeBuilder() {
           />
         );
       case 2:
-        return <ObjectiveStep objective={state.objective} dispatch={dispatch} />;
+        return <ObjectiveStep objective={state.objective} dispatch={dispatch} aiEnhancements={state.aiEnhancements} />;
       case 3:
         return (
           <EducationStep

@@ -6,12 +6,14 @@ interface EnhanceButtonProps {
   aiKey: string;
   text: string;
   dispatch: Dispatch<BuilderAction>;
+  enhanceType?: 'bullet' | 'objective';
 }
 
 export default function EnhanceButton({
   aiKey,
   text,
   dispatch,
+  enhanceType,
 }: EnhanceButtonProps) {
   const { enhance, loading } = useEnhance(dispatch);
 
@@ -20,7 +22,7 @@ export default function EnhanceButton({
       type="button"
       title="Enhance with AI"
       disabled={loading || !text.trim()}
-      onClick={() => enhance(aiKey, text)}
+      onClick={() => enhance(aiKey, text, undefined, enhanceType)}
       className="p-1 text-forest hover:text-forest/80 disabled:opacity-50 transition-colors"
     >
       {loading ? (
