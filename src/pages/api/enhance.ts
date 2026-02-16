@@ -46,7 +46,7 @@ export const POST: APIRoute = async ({ request }) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'anthropic/claude-3.5-haiku',
+        model: import.meta.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-haiku',
         temperature: 0.3,
         max_tokens: 200,
         messages: [
