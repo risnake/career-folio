@@ -73,6 +73,7 @@ export default function BulletEditor({
                 aiKey={aiKey}
                 suggestion={suggestion}
                 dispatch={dispatch}
+                onAccept={(suggested) => updateBullet(bulletIndex, suggested)}
               />
             )}
           </div>

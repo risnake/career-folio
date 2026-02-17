@@ -5,15 +5,15 @@ import type { BuilderAction } from '../../../lib/builderTypes';
 export function useEnhance(dispatch: Dispatch<BuilderAction>) {
   const [loading, setLoading] = useState(false);
 
-  const enhance = async (key: string, bullet: string, context?: string) => {
+  const enhance = async (key: string, text: string, context?: string, type?: 'bullet' | 'objective') => {
     setLoading(true);
-    dispatch({ type: 'AI_REQUEST', key, original: bullet });
+    dispatch({ type: 'AI_REQUEST', key, original: text });
 
     try {
       const res = await fetch('/api/enhance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bullet, context }),
+        body: JSON.stringify({ text, context, type: type || 'bullet' }),
       });
 
       const data = await res.json();

@@ -5,17 +5,38 @@ interface SuggestionPanelProps {
   aiKey: string;
   suggestion: AISuggestion;
   dispatch: Dispatch<BuilderAction>;
+  onAccept?: (suggested: string) => void;
 }
 
 export default function SuggestionPanel({
   aiKey,
   suggestion,
   dispatch,
+  onAccept,
 }: SuggestionPanelProps) {
+  if (suggestion.loading) {
+    return (
+      <div className="mt-2 flex items-center gap-2 rounded border border-rule bg-warm-white p-3 text-sm text-muted">
+        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+        </svg>
+        Enhancing...
+      </div>
+    );
+  }
+
   if (suggestion.error) {
     return (
-      <div className="mt-2 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-        {suggestion.error}
+      <div className="mt-2 flex items-center justify-between rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <span>{suggestion.error}</span>
+        <button
+          type="button"
+          onClick={() => dispatch({ type: 'AI_REJECT', key: aiKey })}
+          className="ml-3 shrink-0 border border-red-300 text-red-700 text-xs px-2 py-0.5 rounded hover:bg-red-100 transition-colors"
+        >
+          Dismiss
+        </button>
       </div>
     );
   }
@@ -40,7 +61,10 @@ export default function SuggestionPanel({
         </button>
         <button
           type="button"
-          onClick={() => dispatch({ type: 'AI_ACCEPT', key: aiKey })}
+          onClick={() => {
+            onAccept?.(suggestion.suggested);
+            dispatch({ type: 'AI_ACCEPT', key: aiKey });
+          }}
           className="bg-forest text-white text-xs px-3 py-1 rounded hover:bg-forest/90 transition-colors"
         >
           Accept
