@@ -10,6 +10,59 @@ const BULLET_SYSTEM_PROMPT = `You are a resume writing expert. Enhance the follo
 
 const OBJECTIVE_SYSTEM_PROMPT = `You are a resume writing expert. Improve the following career objective statement to be more compelling and professional. Make it concise, specific to the candidate's goals, and impactful. Return ONLY the improved objective text, nothing else.`;
 
+const VALID_TYPES = new Set(['bullet', 'objective']);
+
+/**
+ * Parse the raw AI model response to extract just the enhanced text.
+ * Models may wrap their response in quotes, add prefixes like
+ * "Here's the enhanced version:", markdown formatting, etc.
+ */
+function parseAIResponse(raw: string): string {
+  let text = raw.trim();
+
+  // Strip common conversational prefixes the model may add
+  const prefixPatterns = [
+    /^here(?:'s| is) (?:the |an? |your )?(?:enhanced|improved|revised|updated|suggested|better)[\w\s]*?:\s*/i,
+    /^(?:enhanced|improved|revised|updated|suggested)[\w\s]*?:\s*/i,
+    /^sure[,!.]?\s*(?:here(?:'s| is)[\w\s]*?:\s*)?/i,
+    /^(?:certainly|absolutely|of course)[,!.]?\s*(?:here(?:'s| is)[\w\s]*?:\s*)?/i,
+  ];
+  for (const pattern of prefixPatterns) {
+    text = text.replace(pattern, '');
+  }
+
+  // Strip surrounding quotes (single, double, or smart quotes)
+  if (
+    (text.startsWith('"') && text.endsWith('"')) ||
+    (text.startsWith("'") && text.endsWith("'")) ||
+    (text.startsWith('\u201c') && text.endsWith('\u201d'))
+  ) {
+    text = text.slice(1, -1);
+  }
+
+  // Strip leading bullet markers
+  text = text.replace(/^[\u2022\-\*]\s*/, '');
+
+  // If multiple lines, take the first non-empty line (model may add explanations after)
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  if (lines.length > 1) {
+    // If the first line looks like a label (ends with ":"), take the second line
+    text = lines[0].endsWith(':') ? lines[1] : lines[0];
+  } else if (lines.length === 1) {
+    text = lines[0];
+  }
+
+  // Final cleanup: strip any remaining surrounding quotes after all other processing
+  if (
+    (text.startsWith('"') && text.endsWith('"')) ||
+    (text.startsWith("'") && text.endsWith("'"))
+  ) {
+    text = text.slice(1, -1);
+  }
+
+  return text.trim();
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
@@ -17,14 +70,22 @@ export const POST: APIRoute = async ({ request }) => {
       bullet?: string;
       text?: string;
       context?: string;
-      type?: 'bullet' | 'objective';
+      type?: string;
     };
 
+    // Validate type parameter
     const enhanceType = type || 'bullet';
+    if (!VALID_TYPES.has(enhanceType)) {
+      return new Response(
+        JSON.stringify({ error: `Invalid type: must be "bullet" or "objective"` }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
+
     const isObjective = enhanceType === 'objective';
 
-    // For objective type, accept either `text` or `bullet` field
-    const inputText = isObjective ? (text || bullet) : bullet;
+    // Accept either `text` or `bullet` field for backwards compatibility
+    const inputText = text || bullet;
     const maxLength = isObjective ? 1000 : 500;
     const fieldName = isObjective ? 'text' : 'bullet';
 
@@ -83,11 +144,20 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const data = await res.json();
-    const suggested = data.choices?.[0]?.message?.content?.trim();
+    const rawContent = data.choices?.[0]?.message?.content?.trim();
+
+    if (!rawContent) {
+      return new Response(
+        JSON.stringify({ error: 'No suggestion returned from AI' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
+
+    const suggested = parseAIResponse(rawContent);
 
     if (!suggested) {
       return new Response(
-        JSON.stringify({ error: 'No suggestion returned from AI' }),
+        JSON.stringify({ error: 'Could not parse AI response' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } },
       );
     }

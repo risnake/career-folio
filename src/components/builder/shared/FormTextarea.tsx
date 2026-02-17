@@ -21,9 +21,11 @@ export default function FormTextarea({
 }: FormTextareaProps) {
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
+      {label && (
+        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+          {label}
+        </label>
+      )}
       <textarea
         id={name}
         name={name}

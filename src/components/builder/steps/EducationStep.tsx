@@ -1,13 +1,22 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { Dispatch } from 'react';
 import type { Education } from '../../../data/resumes';
 import type { BuilderAction } from '../../../lib/builderTypes';
 import { createEmptyEducation } from '../../../lib/resumeDefaults';
 import FormField from '../shared/FormField';
 import DynamicList from '../shared/DynamicList';
+import DateRangeInput from '../shared/DateRangeInput';
 
 function CourseworkInput({ coursework, onChange, id }: { coursework: string[]; onChange: (courses: string[]) => void; id: string }) {
-  const [raw, setRaw] = useState(coursework.join(', '));
+  const joined = coursework.join(', ');
+  const [raw, setRaw] = useState(joined);
+  const lastCommitted = useRef(joined);
+
+  // Sync from prop when it changes externally
+  if (joined !== lastCommitted.current) {
+    setRaw(joined);
+    lastCommitted.current = joined;
+  }
 
   return (
     <div>
@@ -21,70 +30,13 @@ function CourseworkInput({ coursework, onChange, id }: { coursework: string[]; o
         onChange={(e) => setRaw(e.target.value)}
         onBlur={() => {
           const courses = raw.split(',').map((s) => s.trim()).filter(Boolean);
+          lastCommitted.current = courses.join(', ');
           onChange(courses);
         }}
         placeholder="Economics, Statistics, Computer Science"
         className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       />
       <p className="mt-1 text-xs text-gray-500">Separate courses with commas</p>
-    </div>
-  );
-}
-
-function DateRangeInput({ dates, onChange, namePrefix, error }: { dates: string; onChange: (dates: string) => void; namePrefix: string; error?: string }) {
-  const parts = dates.split(' - ');
-  const [start, setStart] = useState(parts[0] || '');
-  const [end, setEnd] = useState(parts[1] || '');
-  const [isPresent, setIsPresent] = useState((parts[1] || '').toLowerCase() === 'present');
-
-  const update = (s: string, e: string, present: boolean) => {
-    const endVal = present ? 'Present' : e;
-    if (s && endVal) {
-      onChange(`${s} - ${endVal}`);
-    } else if (s) {
-      onChange(s);
-    } else {
-      onChange('');
-    }
-  };
-
-  return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Dates *</label>
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <input
-            name={`${namePrefix}-start`}
-            type="text"
-            value={start}
-            onChange={(e) => { setStart(e.target.value); update(e.target.value, end, isPresent); }}
-            placeholder="MM/YYYY"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <p className="mt-0.5 text-xs text-gray-400">Start date</p>
-        </div>
-        <div>
-          <input
-            name={`${namePrefix}-end`}
-            type="text"
-            value={isPresent ? 'Present' : end}
-            onChange={(e) => { setEnd(e.target.value); update(start, e.target.value, false); setIsPresent(false); }}
-            disabled={isPresent}
-            placeholder="MM/YYYY"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-          />
-          <label className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
-            <input
-              type="checkbox"
-              checked={isPresent}
-              onChange={(e) => { setIsPresent(e.target.checked); setEnd(e.target.checked ? 'Present' : ''); update(start, '', e.target.checked); }}
-              className="rounded border-gray-300"
-            />
-            Present
-          </label>
-        </div>
-      </div>
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
 }
@@ -153,6 +105,7 @@ export default function EducationStep({ education, errors, dispatch }: Education
                 onChange={(dates) => update(index, { dates })}
                 namePrefix={`edu-dates-${index}`}
                 error={errors[`education.${index}.dates`]}
+                required
               />
 
               <FormField

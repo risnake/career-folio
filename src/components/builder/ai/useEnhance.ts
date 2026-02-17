@@ -13,7 +13,7 @@ export function useEnhance(dispatch: Dispatch<BuilderAction>) {
       const res = await fetch('/api/enhance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bullet: text, text, context, type: type || 'bullet' }),
+        body: JSON.stringify({ text, context, type: type || 'bullet' }),
       });
 
       const data = await res.json();

@@ -1,67 +1,10 @@
-import { useState } from 'react';
 import type { Dispatch } from 'react';
 import type { ResumeSection, ExperienceItem } from '../../../data/resumes';
 import type { BuilderAction, AISuggestion } from '../../../lib/builderTypes';
 import FormField from '../shared/FormField';
 import DynamicList from '../shared/DynamicList';
+import DateRangeInput from '../shared/DateRangeInput';
 import BulletEditor from '../shared/BulletEditor';
-
-function DateRangeInput({ dates, onChange, namePrefix }: { dates: string; onChange: (dates: string) => void; namePrefix: string }) {
-  const parts = dates.split(' - ');
-  const [start, setStart] = useState(parts[0] || '');
-  const [end, setEnd] = useState(parts[1] || '');
-  const [isPresent, setIsPresent] = useState((parts[1] || '').toLowerCase() === 'present');
-
-  const commit = (s: string, e: string, present: boolean) => {
-    const endVal = present ? 'Present' : e;
-    if (s && endVal) {
-      onChange(`${s} - ${endVal}`);
-    } else if (s) {
-      onChange(s);
-    } else {
-      onChange('');
-    }
-  };
-
-  return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Dates</label>
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <input
-            name={`${namePrefix}-start`}
-            type="text"
-            value={start}
-            onChange={(e) => { setStart(e.target.value); commit(e.target.value, end, isPresent); }}
-            placeholder="MM/YYYY"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <p className="mt-0.5 text-xs text-gray-400">Start date</p>
-        </div>
-        <div>
-          <input
-            name={`${namePrefix}-end`}
-            type="text"
-            value={isPresent ? 'Present' : end}
-            onChange={(e) => { setEnd(e.target.value); commit(start, e.target.value, false); setIsPresent(false); }}
-            disabled={isPresent}
-            placeholder="MM/YYYY"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-          />
-          <label className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
-            <input
-              type="checkbox"
-              checked={isPresent}
-              onChange={(e) => { setIsPresent(e.target.checked); setEnd(e.target.checked ? 'Present' : ''); commit(start, '', e.target.checked); }}
-              className="rounded border-gray-300"
-            />
-            Present
-          </label>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 interface ExperienceStepProps {
   experienceSections: ResumeSection[];
