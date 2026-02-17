@@ -122,7 +122,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       ? `${inputText}\n\nContext: ${context}`
       : inputText;
 
-    const model = runtime?.env?.OPENROUTER_MODEL || import.meta.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-haiku';
+    const model = runtime?.env?.OPENROUTER_MODEL || import.meta.env.OPENROUTER_MODEL || 'stepfun/step-3.5-flash:free';
 
     const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       body: JSON.stringify({
         model,
         temperature: 0.3,
-        max_tokens: 200,
+        max_tokens: 2048,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userContent },
@@ -144,9 +144,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (!res.ok) {
       const errText = await res.text();
       console.error('OpenRouter error:', res.status, errText);
+
+      let detail = `AI service error (${res.status})`;
+      try {
+        const errJson = JSON.parse(errText);
+        if (errJson?.error?.message) detail = errJson.error.message;
+      } catch { /* use default detail */ }
+
       return new Response(
-        JSON.stringify({ error: 'AI service returned an error' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } },
+        JSON.stringify({ error: detail }),
+        { status: 502, headers: { 'Content-Type': 'application/json' } },
       );
     }
 
