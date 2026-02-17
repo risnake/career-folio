@@ -53,9 +53,18 @@ Custom color palette defined in `src/styles/global.css` via `@theme`:
 - Content pages use: `h1` + amber accent bar (`h-1 w-12 bg-amber-500 rounded`) + card-based layouts
 
 ### Environment Variables
-Set in `.dev.vars` locally or Cloudflare Pages dashboard for production:
-- `OPENROUTER_API_KEY` (required for AI enhance) — OpenRouter API key
-- `OPENROUTER_MODEL` (optional, defaults to `anthropic/claude-3.5-haiku`) — model identifier
+**Local Development**: Create a `.dev.vars` file in the project root with:
+```
+OPENROUTER_API_KEY=your_key_here
+OPENROUTER_MODEL=anthropic/claude-3.5-haiku
+```
+
+**Production (Cloudflare Pages)**: Set environment variables in the Cloudflare Pages dashboard:
+1. Go to your Cloudflare Pages project → Settings → Environment Variables
+2. Add `OPENROUTER_API_KEY` (required for AI enhance) — your OpenRouter API key
+3. Add `OPENROUTER_MODEL` (optional, defaults to `anthropic/claude-3.5-haiku`) — model identifier
+
+**Important**: The `/api/enhance` endpoint accesses runtime environment variables through `locals.runtime.env` (Cloudflare's runtime binding), NOT through `import.meta.env` which only works for build-time variables. Secrets set in the Cloudflare dashboard are automatically available at runtime through this binding.
 
 ### Cloudflare Config
 `wrangler.jsonc` requires `nodejs_compat` compatibility flag because Astro's server bundle references Node built-ins through the sharp image dependency.

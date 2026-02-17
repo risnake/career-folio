@@ -63,7 +63,7 @@ function parseAIResponse(raw: string): string {
   return text.trim();
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const body = await request.json();
     const { bullet, text, context, type } = body as {
@@ -103,10 +103,15 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const apiKey = import.meta.env.OPENROUTER_API_KEY;
+    // Access runtime environment variables from Cloudflare Pages
+    // In production, these come from the Cloudflare dashboard secrets
+    // In local development with wrangler, they come from .dev.vars
+    const runtime = locals.runtime as { env?: { OPENROUTER_API_KEY?: string; OPENROUTER_MODEL?: string } };
+    const apiKey = runtime?.env?.OPENROUTER_API_KEY || import.meta.env.OPENROUTER_API_KEY;
+
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: 'AI enhancement is not configured' }),
+        JSON.stringify({ error: 'AI enhancement is not configured. Please set OPENROUTER_API_KEY in Cloudflare Pages settings.' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } },
       );
     }
@@ -117,6 +122,8 @@ export const POST: APIRoute = async ({ request }) => {
       ? `${inputText}\n\nContext: ${context}`
       : inputText;
 
+    const model = runtime?.env?.OPENROUTER_MODEL || import.meta.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-haiku';
+
     const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -124,7 +131,7 @@ export const POST: APIRoute = async ({ request }) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: import.meta.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-haiku',
+        model,
         temperature: 0.3,
         max_tokens: 200,
         messages: [
