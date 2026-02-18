@@ -26,7 +26,7 @@ const INITIAL_MESSAGE: ChatMessage = {
 };
 
 const HELPER_TEXT =
-  'Share your goals and background, and the assistant will ask brief follow-ups before filling the builder for you.';
+  'The assistant uses a strict JSON schema and will only apply a resume when all required details are gathered. If anything is unclear, it will ask a single follow-up question.';
 
 function buildStateSnapshot(state: BuilderState): BuilderGeneratedResume {
   const template: TemplateType = state.template ?? 'chronological';
