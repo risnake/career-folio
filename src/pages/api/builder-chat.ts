@@ -141,7 +141,7 @@ function extractJson(content: string) {
   } catch { /* fall through */ }
 
   // Try fenced code block
-  const fenceMatch = trimmed.match(/```(?:json)?\\s*([\\s\\S]*?)\\s*```/i);
+  const fenceMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
   if (fenceMatch?.[1]) {
     try {
       return JSON.parse(fenceMatch[1]);
