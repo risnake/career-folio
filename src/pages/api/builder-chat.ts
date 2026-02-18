@@ -9,6 +9,49 @@ type ClientMessage = { role: 'user' | 'assistant'; content: string };
 
 const SYSTEM_PROMPT = `You are a deterministic resume intake assistant. Ask concise follow-up questions until you have enough detail to produce a resume. Never invent facts—if key details are missing, ask for them. When ready, return ONLY a JSON object that matches the required shape (no prose, no markdown). Keep bullets action-oriented and specific, and cap each at 200 characters. Prefer asking another question over guessing.`;
 
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 60;
+
+type RateLimitEntry = { windowStart: number; count: number };
+const rateLimitStore = new Map<string, RateLimitEntry>();
+
+function getClientIp(request: Request): string {
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    const ip = forwardedFor.split(',')[0]?.trim();
+    if (ip) return ip;
+  }
+
+  const cfConnectingIp = request.headers.get('cf-connecting-ip');
+  if (cfConnectingIp) return cfConnectingIp;
+
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp;
+
+  return 'unknown';
+}
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitStore.get(ip);
+
+  if (!entry) {
+    rateLimitStore.set(ip, { windowStart: now, count: 1 });
+    return false;
+  }
+
+  if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    entry.windowStart = now;
+    entry.count = 1;
+    rateLimitStore.set(ip, entry);
+    return false;
+  }
+
+  entry.count += 1;
+  rateLimitStore.set(ip, entry);
+  return entry.count > RATE_LIMIT_MAX_REQUESTS;
+}
+
 interface BuilderChatReplyQuestion {
   type: 'question';
   message: string;
@@ -88,7 +131,7 @@ function normalizeResume(raw: any): BuilderGeneratedResume {
   const contactInput = (raw?.contact ?? {}) as ResumeContact;
   const contact: ResumeContact = {
     email: toCleanString(contactInput.email, 160),
-    phone: toCleanString(contactInput.phone, 60),
+    phone: toCleanString(contactInput.phone, 60) || undefined,
     addresses: toStringArray(contactInput.addresses, 3, 140),
     linkedin: toCleanString(contactInput.linkedin, 200),
     website: toCleanString(contactInput.website, 200),
@@ -148,13 +191,11 @@ function extractJson(content: string) {
     } catch { /* fall through */ }
   }
 
-  // Try substring from first { to last }
-  const firstBrace = trimmed.indexOf('{');
-  const lastBrace = trimmed.lastIndexOf('}');
-  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-    const slice = trimmed.slice(firstBrace, lastBrace + 1);
+  // Try the first balanced-looking JSON block
+  const braceMatch = trimmed.match(/{[\s\S]*?}/);
+  if (braceMatch?.[0]) {
     try {
-      return JSON.parse(slice);
+      return JSON.parse(braceMatch[0]);
     } catch { /* fall through */ }
   }
 
@@ -182,9 +223,9 @@ function sanitizeStateSnapshot(input: any): BuilderGeneratedResume {
     template: toTemplate(input?.template),
     name: toCleanString(input?.name, 180),
     contact: {
-      email: toCleanString(input?.contact?.email, 160),
-      phone: toCleanString(input?.contact?.phone, 60),
-      addresses: toStringArray(input?.contact?.addresses, 3, 140),
+      email: '',
+      phone: undefined,
+      addresses: [],
       linkedin: toCleanString(input?.contact?.linkedin, 200),
       website: toCleanString(input?.contact?.website, 200),
     },
@@ -206,6 +247,14 @@ function sanitizeStateSnapshot(input: any): BuilderGeneratedResume {
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    const clientIp = getClientIp(request);
+    if (isRateLimited(clientIp)) {
+      return new Response(JSON.stringify({ error: 'Too many requests. Please slow down.' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const body = await request.json();
     const messages = sanitizeMessages(body?.messages);
     const stateSnapshot = sanitizeStateSnapshot(body?.state ?? {});
@@ -256,8 +305,8 @@ Current structured state (use to avoid repeating questions): ${JSON.stringify(st
     });
 
     if (!res.ok) {
-      const errText = await res.text();
-      console.error('OpenRouter error:', res.status, errText);
+      await res.text(); // consume body without logging sensitive content
+      console.error('OpenRouter error status:', res.status);
       return new Response(
         JSON.stringify({ error: `AI service error (${res.status})` }),
         { status: 502, headers: { 'Content-Type': 'application/json' } },
