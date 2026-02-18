@@ -9,6 +9,17 @@ export interface AISuggestion {
   error?: string;
 }
 
+export interface BuilderGeneratedResume {
+  template: TemplateType;
+  name: string;
+  contact: ResumeContact;
+  objective: string;
+  education: Education[];
+  experienceSections: ResumeSection[];
+  skills: { label: string; value: string }[];
+  additionalInfo: string[];
+}
+
 export interface BuilderState {
   currentStep: number;
   template: TemplateType | null;
@@ -51,4 +62,5 @@ export type BuilderAction =
   | { type: 'AI_SUCCESS'; key: string; suggested: string }
   | { type: 'AI_ERROR'; key: string; error: string }
   | { type: 'AI_ACCEPT'; key: string }
-  | { type: 'AI_REJECT'; key: string };
+  | { type: 'AI_REJECT'; key: string }
+  | { type: 'APPLY_AI_RESUME'; resume: BuilderGeneratedResume };

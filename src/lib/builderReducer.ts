@@ -162,6 +162,36 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       return { ...state, aiEnhancements: rest };
     }
 
+    case 'APPLY_AI_RESUME': {
+      const contact = {
+        email: action.resume.contact.email || '',
+        phone: action.resume.contact.phone || '',
+        addresses: action.resume.contact.addresses ?? [],
+        linkedin: action.resume.contact.linkedin || '',
+        website: action.resume.contact.website || '',
+      };
+
+      return {
+        ...state,
+        template: action.resume.template,
+        name: action.resume.name,
+        contact,
+        objective: action.resume.objective,
+        education:
+          action.resume.education && action.resume.education.length > 0
+            ? action.resume.education
+            : [createEmptyEducation()],
+        experienceSections:
+          action.resume.experienceSections && action.resume.experienceSections.length > 0
+            ? action.resume.experienceSections
+            : [createEmptySection()],
+        skills: action.resume.skills ?? [],
+        additionalInfo: action.resume.additionalInfo ?? [],
+        errors: {},
+        touched: {},
+      };
+    }
+
     default:
       return state;
   }
