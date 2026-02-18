@@ -7,108 +7,7 @@ import { createEmptyEducation, createEmptyExperienceItem, createEmptySection } f
 
 type ClientMessage = { role: 'user' | 'assistant'; content: string };
 
-const SYSTEM_PROMPT = `You are a deterministic resume intake assistant. Ask concise follow-up questions until you have enough detail to produce a resume. Never invent facts—if key details are missing, ask for them. When ready, return a full resume using the provided JSON schema. Keep bullets action-oriented and specific, and cap each at 200 characters. Prefer asking another question over guessing.`;
-
-const RESPONSE_SCHEMA = {
-  oneOf: [
-    {
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        type: { const: 'question' },
-        message: { type: 'string' },
-      },
-      required: ['type', 'message'],
-    },
-    {
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        type: { const: 'resume' },
-        message: { type: 'string' },
-        resume: {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            template: { type: 'string', enum: ['chronological', 'functional', 'combination'] },
-            name: { type: 'string' },
-            contact: {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                email: { type: 'string' },
-                phone: { type: 'string' },
-                addresses: { type: 'array', items: { type: 'string' } },
-                linkedin: { type: 'string' },
-                website: { type: 'string' },
-              },
-              required: ['email'],
-            },
-            objective: { type: 'string' },
-            education: {
-              type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                  institution: { type: 'string' },
-                  location: { type: 'string' },
-                  degree: { type: 'string' },
-                  dates: { type: 'string' },
-                  gpa: { type: 'string' },
-                  coursework: { type: 'array', items: { type: 'string' } },
-                  details: { type: 'array', items: { type: 'string' } },
-                },
-                required: ['institution', 'location', 'degree', 'dates'],
-              },
-            },
-            experienceSections: {
-              type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                  title: { type: 'string' },
-                  items: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      properties: {
-                        title: { type: 'string' },
-                        organization: { type: 'string' },
-                        location: { type: 'string' },
-                        dates: { type: 'string' },
-                        bullets: { type: 'array', items: { type: 'string' } },
-                      },
-                      required: ['title', 'organization', 'location', 'dates', 'bullets'],
-                    },
-                  },
-                },
-                required: ['title', 'items'],
-              },
-            },
-            skills: {
-              type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                  label: { type: 'string' },
-                  value: { type: 'string' },
-                },
-                required: ['label', 'value'],
-              },
-            },
-            additionalInfo: { type: 'array', items: { type: 'string' } },
-          },
-          required: ['template', 'name', 'contact', 'education', 'experienceSections'],
-        },
-      },
-      required: ['type', 'message', 'resume'],
-    },
-  ],
-};
+const SYSTEM_PROMPT = `You are a deterministic resume intake assistant. Ask concise follow-up questions until you have enough detail to produce a resume. Never invent facts—if key details are missing, ask for them. When ready, return ONLY a JSON object that matches the required shape (no prose, no markdown). Keep bullets action-oriented and specific, and cap each at 200 characters. Prefer asking another question over guessing.`;
 
 interface BuilderChatReplyQuestion {
   type: 'question';
@@ -233,6 +132,35 @@ function normalizeReply(raw: any): BuilderChatReply | null {
   return null;
 }
 
+function extractJson(content: string) {
+  const trimmed = content.trim();
+
+  // Try direct parse first
+  try {
+    return JSON.parse(trimmed);
+  } catch { /* fall through */ }
+
+  // Try fenced code block
+  const fenceMatch = trimmed.match(/```(?:json)?\\s*([\\s\\S]*?)\\s*```/i);
+  if (fenceMatch?.[1]) {
+    try {
+      return JSON.parse(fenceMatch[1]);
+    } catch { /* fall through */ }
+  }
+
+  // Try substring from first { to last }
+  const firstBrace = trimmed.indexOf('{');
+  const lastBrace = trimmed.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    const slice = trimmed.slice(firstBrace, lastBrace + 1);
+    try {
+      return JSON.parse(slice);
+    } catch { /* fall through */ }
+  }
+
+  return null;
+}
+
 function sanitizeMessages(input: unknown): ClientMessage[] {
   if (!Array.isArray(input)) return [];
   return input
@@ -305,17 +233,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
       model,
       temperature: 0,
       max_tokens: 2048,
-      response_format: {
-        type: 'json_schema',
-        json_schema: { name: 'BuilderAssistantResponse', schema: RESPONSE_SCHEMA, strict: true },
-      },
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         {
           role: 'system',
-          content: `Current structured state (do not echo verbatim, use to avoid repeat questions): ${JSON.stringify(
-            stateSnapshot,
-          )}`,
+          content: `ALWAYS respond with raw JSON only (no markdown). The JSON must be one of:
+{"type":"question","message":"<concise follow-up question>"}
+{"type":"resume","message":"<short status>","resume":{template,name,contact,objective,education,experienceSections,skills,additionalInfo}}
+Current structured state (use to avoid repeating questions): ${JSON.stringify(stateSnapshot)}`,
         },
         ...messages,
       ],
@@ -349,18 +274,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    let parsed: any = rawContent;
-    if (typeof rawContent === 'string') {
-      try {
-        parsed = JSON.parse(rawContent);
-      } catch (err) {
-        console.error('Failed to parse AI JSON:', err);
-        return new Response(
-          JSON.stringify({ error: 'Unexpected AI response format' }),
-          { status: 500, headers: { 'Content-Type': 'application/json' } },
-        );
-      }
-    }
+    const parsed = typeof rawContent === 'string' ? extractJson(rawContent) : rawContent;
 
     const reply = normalizeReply(parsed);
 
