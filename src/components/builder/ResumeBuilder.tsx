@@ -11,7 +11,6 @@ import ExperienceStep from './steps/ExperienceStep';
 import SkillsStep from './steps/SkillsStep';
 import AdditionalInfoStep from './steps/AdditionalInfoStep';
 import PreviewStep from './steps/PreviewStep';
-import AssistantChat from './AssistantChat';
 
 const TOTAL_STEPS = 8;
 
@@ -84,8 +83,6 @@ export default function ResumeBuilder() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <AssistantChat state={state} dispatch={dispatch} />
-
       <WizardNav
         currentStep={state.currentStep}
         completedSteps={completedSteps}

@@ -37,6 +37,7 @@ The builder is the largest feature. Key data flow:
 - **AI enhancement** (`src/components/builder/ai/`): `useEnhance` hook calls `/api/enhance`, which proxies to OpenRouter. `EnhanceButton` and `SuggestionPanel` handle the UI.
 - **Preview** (`src/components/builder/preview/`): Three HTML template renderers (Chronological, Functional, Combination) dispatched by `ResumePreview`
 - **Export** (`src/components/builder/export/`): `PdfExport` uses `@react-pdf/renderer` with three PDF template components. `DocxExport` uses the `docx` package. Both use `file-saver` for download.
+- **AI chat intake**: `src/components/builder/AssistantChat.tsx` and `/api/builder-chat` remain in the codebase, but the chat UI is currently hidden on `/builder` until the feature is finalized.
 
 Note: `file-saver` is a CommonJS module. Use `import pkg from 'file-saver'; const { saveAs } = pkg;` for static imports, or `const { saveAs } = await import('file-saver')` for dynamic imports.
 

@@ -38,7 +38,8 @@ All commands are run from the root of the project, from a terminal:
 
 ### AI Enhancement Feature
 
-The resume builder includes AI-powered text enhancement that requires an OpenRouter API key.
+The resume builder includes AI-powered text enhancement that requires an OpenRouter API key. An AI chat intake flow
+exists in the codebase, but its UI is currently hidden on `/builder` until the feature is finalized.
 
 #### Local Development
 
@@ -73,4 +74,3 @@ The `.dev.vars` file is gitignored and used by Wrangler for local development.
 ## 👀 Want to learn more?
 
 Feel free to check [Astro documentation](https://docs.astro.build) or [Cloudflare Pages documentation](https://developers.cloudflare.com/pages/).
-
