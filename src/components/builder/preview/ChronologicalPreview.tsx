@@ -49,6 +49,17 @@ export default function ChronologicalPreview({ state }: { state: BuilderState })
                   Relevant Coursework: {edu.coursework.join(', ')}
                 </div>
               )}
+              {edu.clubs && edu.clubs.length > 0 && (
+                <ul className="ml-4 list-disc text-[9pt]">
+                  {edu.clubs.map((club, j) => (
+                    <li key={j}>
+                      <span className="font-semibold">{club.name}</span>
+                      {club.position ? ` — ${club.position}` : ''}
+                      {club.impact ? `: ${club.impact}` : ''}
+                    </li>
+                  ))}
+                </ul>
+              )}
               {edu.details && edu.details.length > 0 && (
                 <ul className="ml-4 list-disc text-[9pt]">
                   {edu.details.map((d, j) => (

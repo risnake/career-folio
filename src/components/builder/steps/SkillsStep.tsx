@@ -3,6 +3,14 @@ import type { BuilderAction } from '../../../lib/builderTypes';
 import FormField from '../shared/FormField';
 import DynamicList from '../shared/DynamicList';
 
+const SKILL_EXAMPLES = [
+  'Programming: Python, JavaScript/TypeScript, React, Git',
+  'Data: SQL (joins/CTEs), Excel modeling, Tableau or Looker',
+  'Design/Tools: Figma components, Adobe Suite, accessibility checks',
+  'Leadership: Ran weekly standups; mentored peers; onboarded teammates',
+  'Communication: Presented to 50+ audience; wrote documentation and SOPs',
+];
+
 interface SkillsStepProps {
   skills: { label: string; value: string }[];
   dispatch: Dispatch<BuilderAction>;
@@ -12,6 +20,19 @@ export default function SkillsStep({ skills, dispatch }: SkillsStepProps) {
   return (
     <div>
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Skills</h2>
+      <div className="mb-4">
+        <p className="text-xs text-gray-500">Use these examples as inspiration for categories and phrasing:</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {SKILL_EXAMPLES.map((example) => (
+            <span
+              key={example}
+              className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-700"
+            >
+              {example}
+            </span>
+          ))}
+        </div>
+      </div>
 
       <DynamicList
         items={skills}

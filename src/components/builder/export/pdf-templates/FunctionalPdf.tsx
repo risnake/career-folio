@@ -143,6 +143,16 @@ export default function FunctionalPdf({ state }: { state: BuilderState }) {
                     Relevant Coursework: {edu.coursework.join(', ')}
                   </Text>
                 )}
+                {edu.clubs?.map((club, j) => (
+                  <View key={`${club.name}-${j}`} style={s.bullet}>
+                    <Text style={s.bulletDot}>{'\u2022'}</Text>
+                    <Text style={s.bulletText}>
+                      <Text style={s.bold}>{club.name}</Text>
+                      {club.position ? ` — ${club.position}` : ''}
+                      {club.impact ? `: ${club.impact}` : ''}
+                    </Text>
+                  </View>
+                ))}
               </View>
             ))}
           </View>

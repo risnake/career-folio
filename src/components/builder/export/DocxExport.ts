@@ -103,6 +103,12 @@ function buildEducationParagraphs(education: Education[]): Paragraph[] {
         }),
       );
     }
+    if (edu.clubs) {
+      for (const club of edu.clubs) {
+        const line = `${club.name}${club.position ? ` — ${club.position}` : ''}${club.impact ? `: ${club.impact}` : ''}`;
+        paras.push(bulletParagraph(line));
+      }
+    }
     if (edu.details) {
       for (const d of edu.details) {
         paras.push(bulletParagraph(d));
