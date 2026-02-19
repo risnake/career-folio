@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import type { Dispatch } from 'react';
 import type { Education, EducationClub } from '../../../data/resumes';
-import type { BuilderAction } from '../../../lib/builderTypes';
-import { createEmptyEducation } from '../../../lib/resumeDefaults';
+import type { AISuggestion, BuilderAction } from '../../../lib/builderTypes';
 import FormField from '../shared/FormField';
 import DynamicList from '../shared/DynamicList';
 import DateRangeInput from '../shared/DateRangeInput';
+import EnhanceButton from '../ai/EnhanceButton';
+import SuggestionPanel from '../ai/SuggestionPanel';
 
 const AP_COURSES = [
   'AP Research',
@@ -171,10 +172,14 @@ function ClubsInput({
   clubs,
   onChange,
   idPrefix,
+  dispatch,
+  aiEnhancements,
 }: {
   clubs: EducationClub[];
   onChange: (clubs: EducationClub[]) => void;
   idPrefix: string;
+  dispatch: Dispatch<BuilderAction>;
+  aiEnhancements: Record<string, AISuggestion>;
 }) {
   const addClub = (preset?: EducationClub) => {
     onChange([
@@ -260,6 +265,14 @@ function ClubsInput({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 What you did
               </label>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-gray-500">Describe your impact; enhance with AI for stronger wording.</p>
+                <EnhanceButton
+                  aiKey={`${idPrefix}-club-${cIdx}`}
+                  text={club.impact ?? ''}
+                  dispatch={dispatch}
+                />
+              </div>
               <textarea
                 name={`${idPrefix}-club-impact-${cIdx}`}
                 value={club.impact ?? ''}
@@ -280,6 +293,14 @@ function ClubsInput({
                   </button>
                 ))}
               </div>
+              {aiEnhancements[`${idPrefix}-club-${cIdx}`] && (
+                <SuggestionPanel
+                  aiKey={`${idPrefix}-club-${cIdx}`}
+                  suggestion={aiEnhancements[`${idPrefix}-club-${cIdx}`]}
+                  dispatch={dispatch}
+                  onAccept={(suggested) => updateClub(cIdx, { impact: suggested })}
+                />
+              )}
             </div>
           </div>
         )}
@@ -292,9 +313,10 @@ interface EducationStepProps {
   education: Education[];
   errors: Record<string, string>;
   dispatch: Dispatch<BuilderAction>;
+  aiEnhancements: Record<string, AISuggestion>;
 }
 
-export default function EducationStep({ education, errors, dispatch }: EducationStepProps) {
+export default function EducationStep({ education, errors, dispatch, aiEnhancements }: EducationStepProps) {
   const update = (index: number, partial: Partial<Education>) => {
     dispatch({
       type: 'UPDATE_EDUCATION',
@@ -373,6 +395,8 @@ export default function EducationStep({ education, errors, dispatch }: Education
                 clubs={edu.clubs ?? []}
                 onChange={(clubs) => update(index, { clubs })}
                 idPrefix={`edu-${index}`}
+                dispatch={dispatch}
+                aiEnhancements={aiEnhancements}
               />
 
               <div>
