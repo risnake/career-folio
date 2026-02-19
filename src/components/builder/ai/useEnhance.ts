@@ -16,18 +16,34 @@ export function useEnhance(dispatch: Dispatch<BuilderAction>) {
         body: JSON.stringify({ text, context, type: type || 'bullet' }),
       });
 
-      const data = await res.json();
+      const bodyText = await res.text();
+      let data: { suggested?: string; error?: string } | null = null;
+      try {
+        data = bodyText ? JSON.parse(bodyText) : null;
+      } catch {
+        data = null;
+      }
 
       if (!res.ok) {
         dispatch({
           type: 'AI_ERROR',
           key,
-          error: data.error || 'Enhancement failed',
+          error: data?.error || 'Enhancement failed',
         });
         return;
       }
 
-      dispatch({ type: 'AI_SUCCESS', key, suggested: data.suggested });
+      const suggested = data?.suggested;
+      if (!suggested) {
+        dispatch({
+          type: 'AI_ERROR',
+          key,
+          error: 'Unexpected response from server',
+        });
+        return;
+      }
+
+      dispatch({ type: 'AI_SUCCESS', key, suggested });
     } catch (err) {
       dispatch({
         type: 'AI_ERROR',
