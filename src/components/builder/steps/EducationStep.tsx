@@ -8,24 +8,45 @@ import DynamicList from '../shared/DynamicList';
 import DateRangeInput from '../shared/DateRangeInput';
 
 const AP_COURSES = [
-  'AP Biology',
   'AP Calculus AB',
   'AP Calculus BC',
-  'AP Chemistry',
   'AP Computer Science A',
   'AP Computer Science Principles',
-  'AP English Language and Composition',
-  'AP English Literature and Composition',
-  'AP Environmental Science',
-  'AP Macroeconomics',
-  'AP Microeconomics',
+  'AP Biology',
+  'AP Chemistry',
   'AP Physics 1',
   'AP Physics 2',
   'AP Physics C: Mechanics',
-  'AP Psychology',
+  'AP Physics C: Electricity and Magnetism',
+  'AP Environmental Science',
+  'AP Precalculus',
   'AP Statistics',
+  'AP English Language and Composition',
+  'AP English Literature and Composition',
   'AP United States History',
   'AP World History: Modern',
+  'AP United States Government and Politics',
+  'AP Comparative Government and Politics',
+  'AP Macroeconomics',
+  'AP Microeconomics',
+  'AP Psychology',
+  'AP Human Geography',
+  'AP European History',
+  'AP Art History',
+  'AP Music Theory',
+  'AP 2-D Art and Design',
+  'AP 3-D Art and Design',
+  'AP Drawing',
+  'AP Spanish Language and Culture',
+  'AP Spanish Literature and Culture',
+  'AP French Language and Culture',
+  'AP German Language and Culture',
+  'AP Chinese Language and Culture',
+  'AP Japanese Language and Culture',
+  'AP Italian Language and Culture',
+  'AP Latin',
+  'AP Seminar',
+  'AP Research',
 ];
 
 function CourseworkInput({
@@ -60,7 +81,7 @@ function CourseworkInput({
     (course) =>
       course.toLowerCase().includes(query.toLowerCase()) &&
       !normalized.some((c) => c.toLowerCase() === course.toLowerCase()),
-  ).slice(0, 8);
+  ).slice(0, 12);
 
   return (
     <div className="space-y-2">
@@ -130,6 +151,19 @@ const CLUB_TEMPLATES: EducationClub[] = [
   { name: 'Key Club', position: 'Treasurer', impact: 'Managed fundraising and tracked budgets' },
   { name: 'Robotics Club', position: 'Build Lead', impact: 'Designed mechanisms and ran weekly build meetings' },
   { name: 'DECA', position: 'Competitor', impact: 'Placed in state competition with marketing case study' },
+  { name: 'Debate Team', position: 'Captain', impact: 'Led case prep and practice rounds; qualified for state finals' },
+  { name: 'Science Olympiad', position: 'Event Lead', impact: 'Coordinated builds and testing schedules across events' },
+  { name: 'Marching Band', position: 'Section Leader', impact: 'Taught music and drill; organized sectional rehearsals' },
+  { name: 'Varsity Soccer', position: 'Captain', impact: 'Ran offseason conditioning and organized team scrimmages' },
+  { name: 'Yearbook', position: 'Editor', impact: 'Managed deadlines, layout reviews, and photographer assignments' },
+];
+
+const CLUB_IMPACT_SNIPPETS = [
+  'Organized weekly meetings and tracked attendance',
+  'Coordinated fundraisers and managed budgets',
+  'Led competition prep and coached newer members',
+  'Communicated with advisors to secure resources and approvals',
+  'Planned events and delegated tasks to officers',
 ];
 
 function ClubsInput({
@@ -156,6 +190,17 @@ function ClubsInput({
     onChange(
       clubs.map((club, i) => (i === index ? { ...club, ...partial } : club)),
     );
+  };
+
+  const appendImpact = (index: number, snippet: string) => {
+    const current = (clubs[index]?.impact ?? '').trim();
+    if (current.toLowerCase().includes(snippet.toLowerCase())) return;
+    const separator = current
+      ? current.endsWith('.') || current.endsWith(';')
+        ? ' '
+        : '; '
+      : '';
+    updateClub(index, { impact: `${current}${separator}${snippet}` });
   };
 
   return (
@@ -222,6 +267,18 @@ function ClubsInput({
                 placeholder="Organized weekly meetings, ran fundraisers, led regional competition team..."
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
+              <div className="mt-2 flex flex-wrap gap-2">
+                {CLUB_IMPACT_SNIPPETS.map((snippet) => (
+                  <button
+                    key={snippet}
+                    type="button"
+                    onClick={() => appendImpact(cIdx, snippet)}
+                    className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-700 hover:border-blue-400 hover:text-blue-700"
+                  >
+                    {snippet}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}

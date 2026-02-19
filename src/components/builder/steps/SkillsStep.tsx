@@ -9,6 +9,10 @@ const SKILL_EXAMPLES = [
   'Design/Tools: Figma components, Adobe Suite, accessibility checks',
   'Leadership: Ran weekly standups; mentored peers; onboarded teammates',
   'Communication: Presented to 50+ audience; wrote documentation and SOPs',
+  'STEM Coursework: AP Calculus BC, AP Physics, MATLAB labs',
+  'Clubs: Robotics (CAD/Arduino), DECA case prep, NHS tutoring hours',
+  'Writing/Research: APA/MLA citations, slide storytelling, interview notes',
+  'Operations: Google Workspace, event logistics, point-of-sale systems',
 ];
 
 interface SkillsStepProps {
