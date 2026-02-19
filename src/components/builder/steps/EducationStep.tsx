@@ -79,11 +79,15 @@ function CourseworkInput({
     onChange(normalized.filter((c) => c !== course));
   };
 
-  const filtered = AP_COURSES.filter(
-    (course) =>
-      course.toLowerCase().includes(query.toLowerCase()) &&
-      !normalized.some((c) => c.toLowerCase() === course.toLowerCase()),
-  ).slice(0, 12);
+  const trimmedQuery = query.trim().toLowerCase();
+  const filtered =
+    trimmedQuery.length === 0
+      ? []
+      : AP_COURSES.filter(
+          (course) =>
+            course.toLowerCase().includes(trimmedQuery) &&
+            !normalized.some((c) => c.toLowerCase() === course.toLowerCase()),
+        ).slice(0, 12);
 
   return (
     <div className="space-y-2">

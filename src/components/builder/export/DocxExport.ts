@@ -105,6 +105,9 @@ function buildEducationParagraphs(education: Education[]): Paragraph[] {
     }
     if (edu.clubs) {
       for (const club of edu.clubs) {
+        if (!club?.name || club.name.trim() === '') {
+          continue;
+        }
         const line = `${club.name}${club.position ? ` — ${club.position}` : ''}${club.impact ? `: ${club.impact}` : ''}`;
         paras.push(bulletParagraph(line));
       }

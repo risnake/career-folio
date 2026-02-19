@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface DateRangeInputProps {
   dates: string;
@@ -15,7 +15,12 @@ export default function DateRangeInput({ dates, onChange, namePrefix, error, req
   };
   const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 15 }, (_, i) => currentYear + 5 - i);
+  const pastYearSpan = 80;
+  const futureYearSpan = 5;
+  const yearOptions = Array.from(
+    { length: pastYearSpan + futureYearSpan + 1 },
+    (_, i) => currentYear + futureYearSpan - i,
+  );
   const parseYear = (val: string) => {
     const match = val.match(/(\d{4})/);
     return match ? Number(match[1]) : undefined;
@@ -32,8 +37,8 @@ export default function DateRangeInput({ dates, onChange, namePrefix, error, req
   const [endYear, setEndYear] = useState(parseYear(initEnd) ?? currentYear);
   const lastCommitted = useRef(dates);
 
-  // Sync from prop when it changes externally (e.g. undo, reset, navigating back)
-  if (dates !== lastCommitted.current) {
+  useEffect(() => {
+    if (dates === lastCommitted.current) return;
     const { s, e } = parse(dates);
     setStart(s);
     setEnd(e);
@@ -41,7 +46,7 @@ export default function DateRangeInput({ dates, onChange, namePrefix, error, req
     setStartYear(parseYear(s) ?? currentYear);
     setEndYear(parseYear(e) ?? currentYear);
     lastCommitted.current = dates;
-  }
+  }, [dates, currentYear]);
 
   const commit = (s: string, e: string, present: boolean) => {
     const endVal = present ? 'Present' : e;

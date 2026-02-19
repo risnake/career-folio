@@ -135,16 +135,24 @@ export default function CombinationPdf({ state }: { state: BuilderState }) {
                     Relevant Coursework: {edu.coursework.join(', ')}
                   </Text>
                 )}
-                {edu.clubs?.map((club, j) => (
-                  <View key={`${club.name}-${j}`} style={s.bullet}>
-                    <Text style={s.bulletDot}>{'\u2022'}</Text>
-                    <Text style={s.bulletText}>
-                      <Text style={s.bold}>{club.name}</Text>
-                      {club.position ? ` — ${club.position}` : ''}
-                      {club.impact ? `: ${club.impact}` : ''}
-                    </Text>
-                  </View>
-                ))}
+                {(edu.clubs || [])
+                  .filter(
+                    (club) =>
+                      club &&
+                      (club.name?.toString().trim() ||
+                        club.position?.toString().trim() ||
+                        club.impact?.toString().trim()),
+                  )
+                  .map((club, j) => (
+                    <View key={`${club.name || 'club'}-${j}`} style={s.bullet}>
+                      <Text style={s.bulletDot}>{'\u2022'}</Text>
+                      <Text style={s.bulletText}>
+                        <Text style={s.bold}>{club.name}</Text>
+                        {club.position ? ` — ${club.position}` : ''}
+                        {club.impact ? `: ${club.impact}` : ''}
+                      </Text>
+                    </View>
+                  ))}
                 {edu.details?.map((d, j) => (
                   <View key={j} style={s.bullet}>
                     <Text style={s.bulletDot}>{'\u2022'}</Text>
