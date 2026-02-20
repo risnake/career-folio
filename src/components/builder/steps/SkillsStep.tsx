@@ -21,7 +21,7 @@ export default function SkillsStep({ skills, dispatch }: SkillsStepProps) {
               <button
                 key={label}
                 type="button"
-                onClick={() => dispatch({ type: 'ADD_SKILL' })}
+                onClick={() => dispatch({ type: 'ADD_SKILL', label })}
                 className="text-xs px-3 py-1 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400 transition-colors"
               >
                 + {label}

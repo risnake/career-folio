@@ -50,7 +50,7 @@ export type BuilderAction =
   | { type: 'ADD_EXPERIENCE_ITEM'; sectionIndex: number }
   | { type: 'UPDATE_EXPERIENCE_ITEM'; sectionIndex: number; itemIndex: number; item: ExperienceItem }
   | { type: 'REMOVE_EXPERIENCE_ITEM'; sectionIndex: number; itemIndex: number }
-  | { type: 'ADD_SKILL' }
+  | { type: 'ADD_SKILL'; label?: string }
   | { type: 'UPDATE_SKILL'; index: number; skill: { label: string; value: string } }
   | { type: 'REMOVE_SKILL'; index: number }
   | { type: 'ADD_ADDITIONAL_INFO' }

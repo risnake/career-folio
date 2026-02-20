@@ -31,19 +31,19 @@ function PositionCard({
   dispatch: Dispatch<BuilderAction>;
   aiEnhancements: Record<string, AISuggestion>;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const title = item.title || item.organization || `Position ${itemIndex + 1}`;
 
   return (
     <div className="border border-gray-100 rounded-lg bg-white overflow-hidden">
       <button
         type="button"
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
       >
         <span className="text-sm font-medium text-gray-700 truncate">{title}</span>
         <svg
-          className={`w-4 h-4 text-gray-400 transition-transform ${collapsed ? '' : 'rotate-180'}`}
+          className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -53,7 +53,7 @@ function PositionCard({
         </svg>
       </button>
 
-      {!collapsed && (
+      {isOpen && (
         <div className="px-4 pb-4 space-y-3 border-t border-gray-50">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
             <FormField

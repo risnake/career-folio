@@ -44,6 +44,9 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
       setError('Failed to read file. Try pasting the text instead.');
     };
     reader.readAsText(file);
+
+    // Reset the input so the same file can be re-selected
+    e.target.value = '';
   }, []);
 
   const handleParse = useCallback(async () => {

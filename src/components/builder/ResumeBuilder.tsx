@@ -56,10 +56,27 @@ export default function ResumeBuilder() {
   }, []);
 
   const handleImportComplete = useCallback(() => {
-    // After import, mark template as completed and jump to contact step for review
-    setCompletedSteps([0]);
-    dispatch({ type: 'SET_STEP', step: 1 });
+    // After import, land on template step so user can confirm the auto-selected template
+    setCompletedSteps([]);
+    dispatch({ type: 'SET_STEP', step: 0 });
     setShowUpload(false);
+  }, []);
+
+  const handleStartOver = useCallback(() => {
+    // Reset everything and go back to upload screen
+    setCompletedSteps([]);
+    dispatch({ type: 'APPLY_AI_RESUME', resume: {
+      template: 'chronological',
+      name: '',
+      contact: { email: '' },
+      objective: '',
+      education: [],
+      experienceSections: [],
+      skills: [],
+      additionalInfo: [],
+    }});
+    dispatch({ type: 'SET_STEP', step: 0 });
+    setShowUpload(true);
   }, []);
 
   if (showUpload) {
@@ -161,7 +178,7 @@ export default function ResumeBuilder() {
         ) : (
           <button
             type="button"
-            onClick={() => setShowUpload(true)}
+            onClick={handleStartOver}
             className="inline-flex items-center gap-2 border border-rule text-ink px-5 py-2.5 rounded-lg text-sm font-medium hover:border-ink transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

@@ -16,7 +16,9 @@ interface WizardNavProps {
 }
 
 export default function WizardNav({ currentStep, completedSteps, onStepClick }: WizardNavProps) {
-  const progress = Math.round((completedSteps.length / STEPS.length) * 100);
+  // Preview (last step) isn't "completable" — the 7 content steps are the ones that count
+  const CONTENT_STEPS = STEPS.length - 1;
+  const progress = Math.round((Math.min(completedSteps.length, CONTENT_STEPS) / CONTENT_STEPS) * 100);
 
   return (
     <nav className="mb-8">

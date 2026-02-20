@@ -91,7 +91,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       };
 
     case 'ADD_SKILL':
-      return { ...state, skills: [...state.skills, { label: '', value: '' }] };
+      return { ...state, skills: [...state.skills, { label: action.label ?? '', value: '' }] };
 
     case 'UPDATE_SKILL':
       return {
