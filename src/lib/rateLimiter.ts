@@ -4,19 +4,20 @@ type RateLimitEntry = { windowStart: number; count: number };
 
 export function createRateLimiter(windowMs: number, maxRequests: number) {
   const store = new Map<string, RateLimitEntry>();
+  let lastCleanup = Date.now();
 
-  function evictStale() {
-    if (store.size <= MAX_ENTRIES) return;
-    const now = Date.now();
+  function evictStale(now: number) {
+    if (store.size <= MAX_ENTRIES && now - lastCleanup < windowMs) return;
     for (const [key, entry] of store) {
       if (now - entry.windowStart > windowMs) store.delete(key);
     }
+    lastCleanup = now;
   }
 
   return {
     isLimited(ip: string): boolean {
-      evictStale();
       const now = Date.now();
+      evictStale(now);
       const entry = store.get(ip);
 
       if (!entry) {

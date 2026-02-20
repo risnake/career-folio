@@ -63,4 +63,4 @@ export type BuilderAction =
   | { type: 'AI_ERROR'; key: string; error: string }
   | { type: 'AI_ACCEPT'; key: string }
   | { type: 'AI_REJECT'; key: string }
-  | { type: 'APPLY_AI_RESUME'; resume: BuilderGeneratedResume };
+  | { type: 'APPLY_AI_RESUME'; resume: BuilderGeneratedResume; startStep?: number };
