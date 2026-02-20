@@ -10,6 +10,7 @@ export function createEmptyEducation(): Education {
     gpa: '',
     coursework: [],
     details: [],
+    clubs: [],
   };
 }
 

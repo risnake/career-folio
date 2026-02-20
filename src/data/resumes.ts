@@ -14,6 +14,13 @@ export interface Education {
   details?: string[];
   gpa?: string;
   coursework?: string[];
+  clubs?: EducationClub[];
+}
+
+export interface EducationClub {
+  name: string;
+  position?: string;
+  impact?: string;
 }
 
 export interface ExperienceItem {
