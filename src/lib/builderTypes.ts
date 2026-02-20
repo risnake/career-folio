@@ -50,7 +50,7 @@ export type BuilderAction =
   | { type: 'ADD_EXPERIENCE_ITEM'; sectionIndex: number }
   | { type: 'UPDATE_EXPERIENCE_ITEM'; sectionIndex: number; itemIndex: number; item: ExperienceItem }
   | { type: 'REMOVE_EXPERIENCE_ITEM'; sectionIndex: number; itemIndex: number }
-  | { type: 'ADD_SKILL' }
+  | { type: 'ADD_SKILL'; label?: string }
   | { type: 'UPDATE_SKILL'; index: number; skill: { label: string; value: string } }
   | { type: 'REMOVE_SKILL'; index: number }
   | { type: 'ADD_ADDITIONAL_INFO' }
@@ -63,4 +63,4 @@ export type BuilderAction =
   | { type: 'AI_ERROR'; key: string; error: string }
   | { type: 'AI_ACCEPT'; key: string }
   | { type: 'AI_REJECT'; key: string }
-  | { type: 'APPLY_AI_RESUME'; resume: BuilderGeneratedResume };
+  | { type: 'APPLY_AI_RESUME'; resume: BuilderGeneratedResume; startStep?: number };

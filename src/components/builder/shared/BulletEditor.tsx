@@ -50,7 +50,7 @@ export default function BulletEditor({
                 value={bullet}
                 onChange={(e) => updateBullet(bulletIndex, e.target.value)}
                 placeholder="Describe an accomplishment or responsibility..."
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:border-terracotta"
               />
               <EnhanceButton
                 aiKey={aiKey}
@@ -82,7 +82,7 @@ export default function BulletEditor({
       <button
         type="button"
         onClick={addBullet}
-        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+        className="inline-flex items-center gap-1 text-sm text-terracotta hover:text-terracotta/80 transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />

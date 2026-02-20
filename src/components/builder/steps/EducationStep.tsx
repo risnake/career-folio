@@ -331,8 +331,6 @@ export default function EducationStep({ education, errors, dispatch, aiEnhanceme
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Education</h2>
-
       <DynamicList
         items={education}
         onAdd={() => dispatch({ type: 'ADD_EDUCATION' })}
@@ -424,7 +422,7 @@ export default function EducationStep({ education, errors, dispatch, aiEnhanceme
                         update(index, { details: updated });
                       }}
                       placeholder="Honor, award, or other detail"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:border-terracotta"
                     />
                   )}
                 />

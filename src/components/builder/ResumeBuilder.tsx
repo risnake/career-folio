@@ -1,8 +1,9 @@
 import { useReducer, useState, useCallback } from 'react';
 import { builderReducer } from '../../lib/builderReducer';
-import { createInitialState } from '../../lib/resumeDefaults';
+import { createInitialState, createEmptyEducation, createEmptySection } from '../../lib/resumeDefaults';
 import { validateStep } from '../../lib/validation';
 import WizardNav from './WizardNav';
+import ResumeUpload from './ResumeUpload';
 import TemplateStep from './steps/TemplateStep';
 import ContactStep from './steps/ContactStep';
 import ObjectiveStep from './steps/ObjectiveStep';
@@ -13,10 +14,23 @@ import AdditionalInfoStep from './steps/AdditionalInfoStep';
 import PreviewStep from './steps/PreviewStep';
 
 const TOTAL_STEPS = 8;
+const PREVIEW_STEP = TOTAL_STEPS - 1;
+
+const STEP_INFO: { title: string; subtitle: string }[] = [
+  { title: 'Choose a template', subtitle: 'Pick a layout that fits your experience and career goals.' },
+  { title: 'Contact information', subtitle: 'How employers will reach you.' },
+  { title: 'Career objective', subtitle: 'A brief summary of your professional goals. This is optional.' },
+  { title: 'Education', subtitle: 'Your academic background and achievements.' },
+  { title: 'Experience', subtitle: 'Your work history, leadership roles, and other relevant experience.' },
+  { title: 'Skills', subtitle: 'Technical skills, languages, and other proficiencies. This is optional.' },
+  { title: 'Additional information', subtitle: 'Awards, activities, interests, or certifications. This is optional.' },
+  { title: 'Preview & export', subtitle: 'Review your resume and download it as PDF or DOCX.' },
+];
 
 export default function ResumeBuilder() {
   const [state, dispatch] = useReducer(builderReducer, undefined, createInitialState);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [showUpload, setShowUpload] = useState(true);
 
   const handleNext = useCallback(() => {
     const { isValid, errors } = validateStep(state.currentStep, state);
@@ -37,6 +51,46 @@ export default function ResumeBuilder() {
   const handleStepClick = useCallback((step: number) => {
     dispatch({ type: 'SET_STEP', step });
   }, []);
+
+  const handleStartFresh = useCallback(() => {
+    setShowUpload(false);
+  }, []);
+
+  const handleImportComplete = useCallback(() => {
+    const completed = Array.from({ length: PREVIEW_STEP }, (_, i) => i);
+    setCompletedSteps(completed);
+    dispatch({ type: 'SET_STEP', step: PREVIEW_STEP });
+    setShowUpload(false);
+  }, []);
+
+  const handleStartOver = useCallback(() => {
+    setCompletedSteps([]);
+    dispatch({ type: 'APPLY_AI_RESUME', startStep: 0, resume: {
+      template: 'chronological',
+      name: '',
+      contact: { email: '', phone: '', addresses: [], linkedin: '', website: '' },
+      objective: '',
+      education: [createEmptyEducation()],
+      experienceSections: [createEmptySection()],
+      skills: [],
+      additionalInfo: [],
+    }});
+    setShowUpload(true);
+  }, []);
+
+  if (showUpload) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 md:p-8">
+          <ResumeUpload
+            dispatch={dispatch}
+            onStartFresh={handleStartFresh}
+            onImportComplete={handleImportComplete}
+          />
+        </div>
+      </div>
+    );
+  }
 
   const renderStep = () => {
     switch (state.currentStep) {
@@ -82,6 +136,8 @@ export default function ResumeBuilder() {
     }
   };
 
+  const stepInfo = STEP_INFO[state.currentStep];
+
   return (
     <div className="max-w-4xl mx-auto">
       <WizardNav
@@ -91,6 +147,19 @@ export default function ResumeBuilder() {
       />
 
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 md:p-8">
+        {/* Step header — shown on all steps except preview */}
+        {state.currentStep < TOTAL_STEPS - 1 && stepInfo && (
+          <div className="mb-6 pb-4 border-b border-gray-100">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-medium text-terracotta bg-terracotta/10 px-2 py-0.5 rounded-full">
+                Step {state.currentStep + 1} of {TOTAL_STEPS}
+              </span>
+            </div>
+            <h2 className="text-lg font-semibold text-gray-900">{stepInfo.title}</h2>
+            <p className="text-sm text-gray-500 mt-0.5">{stepInfo.subtitle}</p>
+          </div>
+        )}
+
         {renderStep()}
       </div>
 
@@ -107,7 +176,16 @@ export default function ResumeBuilder() {
             Back
           </button>
         ) : (
-          <div />
+          <button
+            type="button"
+            onClick={handleStartOver}
+            className="inline-flex items-center gap-2 border border-rule text-ink px-5 py-2.5 rounded-lg text-sm font-medium hover:border-ink transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            Start over
+          </button>
         )}
 
         {state.currentStep < TOTAL_STEPS - 1 && (
@@ -116,7 +194,7 @@ export default function ResumeBuilder() {
             onClick={handleNext}
             className="inline-flex items-center gap-2 bg-terracotta text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-terracotta/90 transition-colors"
           >
-            Next
+            {state.currentStep === TOTAL_STEPS - 2 ? 'Preview resume' : 'Next'}
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>

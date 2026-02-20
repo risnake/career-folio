@@ -91,7 +91,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       };
 
     case 'ADD_SKILL':
-      return { ...state, skills: [...state.skills, { label: '', value: '' }] };
+      return { ...state, skills: [...state.skills, { label: action.label ?? '', value: '' }] };
 
     case 'UPDATE_SKILL':
       return {
@@ -163,6 +163,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
     }
 
     case 'APPLY_AI_RESUME': {
+      const targetStep = Math.max(0, action.startStep ?? state.currentStep ?? 0);
       const contact = {
         email: action.resume.contact.email || '',
         phone: action.resume.contact.phone || '',
@@ -173,6 +174,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
 
       return {
         ...state,
+        currentStep: targetStep,
         template: action.resume.template,
         name: action.resume.name,
         contact,
