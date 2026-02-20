@@ -58,8 +58,6 @@ export default function EducationStep({ education, errors, dispatch }: Education
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Education</h2>
-
       <DynamicList
         items={education}
         onAdd={() => dispatch({ type: 'ADD_EDUCATION' })}

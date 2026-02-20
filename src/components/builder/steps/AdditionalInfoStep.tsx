@@ -10,10 +10,13 @@ interface AdditionalInfoStepProps {
 export default function AdditionalInfoStep({ additionalInfo, dispatch }: AdditionalInfoStepProps) {
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-1">Additional Information</h2>
-      <p className="text-sm text-gray-500 mb-4">
-        Awards, activities, interests, or anything else you'd like to include.
-      </p>
+      {additionalInfo.length === 0 && (
+        <div className="text-center py-6 mb-4 border border-dashed border-gray-200 rounded-lg">
+          <p className="text-sm text-gray-500">
+            Nothing here yet. Add awards, activities, certifications, or interests.
+          </p>
+        </div>
+      )}
 
       <DynamicList
         items={additionalInfo}

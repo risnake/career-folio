@@ -1,12 +1,12 @@
 const STEPS = [
-  { label: 'Template', short: 'Tmpl' },
-  { label: 'Contact', short: 'Info' },
-  { label: 'Objective', short: 'Obj' },
-  { label: 'Education', short: 'Edu' },
-  { label: 'Experience', short: 'Exp' },
-  { label: 'Skills', short: 'Skills' },
-  { label: 'Additional', short: 'More' },
-  { label: 'Preview', short: 'Done' },
+  { label: 'Template', short: '1' },
+  { label: 'Contact', short: '2' },
+  { label: 'Objective', short: '3' },
+  { label: 'Education', short: '4' },
+  { label: 'Experience', short: '5' },
+  { label: 'Skills', short: '6' },
+  { label: 'Extras', short: '7' },
+  { label: 'Preview', short: '8' },
 ];
 
 interface WizardNavProps {
@@ -16,9 +16,24 @@ interface WizardNavProps {
 }
 
 export default function WizardNav({ currentStep, completedSteps, onStepClick }: WizardNavProps) {
+  const progress = Math.round((completedSteps.length / STEPS.length) * 100);
+
   return (
-    <nav className="mb-8 overflow-x-auto">
-      <ol className="flex items-center gap-1 min-w-max">
+    <nav className="mb-8">
+      {/* Progress bar */}
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs text-gray-500 font-medium">Progress</span>
+        <span className="text-xs text-gray-400">{progress}%</span>
+      </div>
+      <div className="h-1.5 bg-gray-100 rounded-full mb-4 overflow-hidden">
+        <div
+          className="h-full bg-forest rounded-full transition-all duration-300"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* Step indicators */}
+      <ol className="flex items-center gap-1 overflow-x-auto min-w-max">
         {STEPS.map((step, i) => {
           const isActive = i === currentStep;
           const isCompleted = completedSteps.includes(i);

@@ -16,43 +16,45 @@ export default function ContactStep({ name, contact, errors, dispatch }: Contact
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FormField
+          label="Full Name *"
+          name="name"
+          value={name}
+          onChange={(e) => dispatch({ type: 'SET_NAME', name: e.target.value })}
+          error={errors.name}
+          placeholder="John Doe"
+        />
 
-      <FormField
-        label="Full Name *"
-        name="name"
-        value={name}
-        onChange={(e) => dispatch({ type: 'SET_NAME', name: e.target.value })}
-        error={errors.name}
-        placeholder="John Doe"
-      />
+        <FormField
+          label="Email *"
+          name="email"
+          type="email"
+          value={contact.email}
+          onChange={(e) => dispatch({ type: 'SET_CONTACT', contact: { email: e.target.value } })}
+          error={errors.email}
+          placeholder="you@example.com"
+        />
+      </div>
 
-      <FormField
-        label="Email *"
-        name="email"
-        type="email"
-        value={contact.email}
-        onChange={(e) => dispatch({ type: 'SET_CONTACT', contact: { email: e.target.value } })}
-        error={errors.email}
-        placeholder="you@example.com"
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FormField
+          label="Phone"
+          name="phone"
+          type="tel"
+          value={contact.phone ?? ''}
+          onChange={(e) => dispatch({ type: 'SET_CONTACT', contact: { phone: e.target.value } })}
+          placeholder="(555) 123-4567"
+        />
 
-      <FormField
-        label="Phone"
-        name="phone"
-        type="tel"
-        value={contact.phone ?? ''}
-        onChange={(e) => dispatch({ type: 'SET_CONTACT', contact: { phone: e.target.value } })}
-        placeholder="(555) 123-4567"
-      />
-
-      <FormField
-        label="LinkedIn"
-        name="linkedin"
-        value={contact.linkedin ?? ''}
-        onChange={(e) => dispatch({ type: 'SET_CONTACT', contact: { linkedin: e.target.value } })}
-        placeholder="linkedin.com/in/yourname"
-      />
+        <FormField
+          label="LinkedIn"
+          name="linkedin"
+          value={contact.linkedin ?? ''}
+          onChange={(e) => dispatch({ type: 'SET_CONTACT', contact: { linkedin: e.target.value } })}
+          placeholder="linkedin.com/in/yourname"
+        />
+      </div>
 
       <FormField
         label="Website"

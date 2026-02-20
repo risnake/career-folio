@@ -16,13 +16,10 @@ export default function ObjectiveStep({ objective, dispatch, aiEnhancements }: O
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-1">Objective</h2>
-      <p className="text-sm text-gray-500 mb-4">Optional — a brief statement of your career goals.</p>
-
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label htmlFor="objective" className="block text-sm font-medium text-gray-700">
-            Objective Statement
+            Objective statement
           </label>
           <EnhanceButton
             aiKey={aiKey}
