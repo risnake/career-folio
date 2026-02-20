@@ -1,6 +1,6 @@
 import { useReducer, useState, useCallback } from 'react';
 import { builderReducer } from '../../lib/builderReducer';
-import { createInitialState } from '../../lib/resumeDefaults';
+import { createInitialState, createEmptyEducation, createEmptySection } from '../../lib/resumeDefaults';
 import { validateStep } from '../../lib/validation';
 import WizardNav from './WizardNav';
 import ResumeUpload from './ResumeUpload';
@@ -14,6 +14,7 @@ import AdditionalInfoStep from './steps/AdditionalInfoStep';
 import PreviewStep from './steps/PreviewStep';
 
 const TOTAL_STEPS = 8;
+const PREVIEW_STEP = TOTAL_STEPS - 1;
 
 const STEP_INFO: { title: string; subtitle: string }[] = [
   { title: 'Choose a template', subtitle: 'Pick a layout that fits your experience and career goals.' },
@@ -56,21 +57,21 @@ export default function ResumeBuilder() {
   }, []);
 
   const handleImportComplete = useCallback(() => {
-    // APPLY_AI_RESUME already resets currentStep to 0
-    setCompletedSteps([]);
+    const completed = Array.from({ length: PREVIEW_STEP }, (_, i) => i);
+    setCompletedSteps(completed);
+    dispatch({ type: 'SET_STEP', step: PREVIEW_STEP });
     setShowUpload(false);
   }, []);
 
   const handleStartOver = useCallback(() => {
-    // APPLY_AI_RESUME resets all fields and currentStep to 0 in a single dispatch
     setCompletedSteps([]);
-    dispatch({ type: 'APPLY_AI_RESUME', resume: {
+    dispatch({ type: 'APPLY_AI_RESUME', startStep: 0, resume: {
       template: 'chronological',
       name: '',
-      contact: { email: '' },
+      contact: { email: '', phone: '', addresses: [], linkedin: '', website: '' },
       objective: '',
-      education: [],
-      experienceSections: [],
+      education: [createEmptyEducation()],
+      experienceSections: [createEmptySection()],
       skills: [],
       additionalInfo: [],
     }});

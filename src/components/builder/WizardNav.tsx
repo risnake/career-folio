@@ -47,6 +47,8 @@ export default function WizardNav({ currentStep, completedSteps, onStepClick }: 
                 type="button"
                 onClick={() => isClickable && onStepClick(i)}
                 disabled={!isClickable}
+                aria-label={label}
+                title={label}
                 className={`flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                   isActive
                     ? 'bg-terracotta/10 text-terracotta font-semibold'
@@ -72,6 +74,7 @@ export default function WizardNav({ currentStep, completedSteps, onStepClick }: 
                     i + 1
                   )}
                 </span>
+                <span className="text-[10px] text-gray-600 sm:hidden">{label}</span>
                 <span className="hidden sm:inline">{label}</span>
               </button>
 

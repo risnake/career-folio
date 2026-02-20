@@ -71,9 +71,9 @@ function sanitizeStateSnapshot(input: any): BuilderGeneratedResume {
     template: toTemplate(input?.template),
     name: toCleanString(input?.name, 180),
     contact: {
-      email: '',
-      phone: undefined,
-      addresses: [],
+      email: toCleanString(input?.contact?.email, 160),
+      phone: toCleanString(input?.contact?.phone, 60),
+      addresses: toStringArray(input?.contact?.addresses, 3, 140),
       linkedin: toCleanString(input?.contact?.linkedin, 200),
       website: toCleanString(input?.contact?.website, 200),
     },

@@ -2,6 +2,9 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import type { Dispatch } from 'react';
 import type { BuilderAction, BuilderGeneratedResume } from '../../lib/builderTypes';
 
+const MAX_TEXT_LENGTH = 15000;
+const PREVIEW_STEP = 7;
+
 interface ResumeUploadProps {
   dispatch: Dispatch<BuilderAction>;
   onStartFresh: () => void;
@@ -24,16 +27,16 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 500_000) {
-      setError('File is too large (max 500KB)');
+    if (file.size > MAX_TEXT_LENGTH) {
+      setError('File is too large (max 15KB / 15,000 characters)');
       return;
     }
 
-    const validTypes = ['text/plain', 'text/markdown', 'text/csv'];
+    const validTypes = ['text/plain', 'text/markdown'];
     const validExtensions = ['.txt', '.md', '.text'];
     const ext = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
     if (!validTypes.includes(file.type) && !validExtensions.includes(ext)) {
-      setError('Please upload a text file (.txt). For PDF or Word resumes, copy and paste the text instead.');
+      setError('Please upload a text file (.txt, .text, .md). For PDF or Word resumes, copy and paste the text instead.');
       return;
     }
 
@@ -42,6 +45,10 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
     reader.onload = (event) => {
       const content = event.target?.result;
       if (typeof content === 'string') {
+        if (content.length > MAX_TEXT_LENGTH) {
+          setError('Resume text is too long (max 15,000 characters). Try trimming or splitting the file.');
+          return;
+        }
         setText(content);
       }
     };
@@ -55,8 +62,15 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
   }, []);
 
   const handleParse = useCallback(async () => {
-    if (!text.trim()) {
+    const trimmed = text.trim();
+
+    if (!trimmed) {
       setError('Please paste your resume text or upload a file first.');
+      return;
+    }
+
+    if (trimmed.length > MAX_TEXT_LENGTH) {
+      setError('Resume text is too long (max 15,000 characters). Try trimming or splitting it.');
       return;
     }
 
@@ -71,7 +85,7 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
       const res = await fetch('/api/parse-resume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text.trim() }),
+        body: JSON.stringify({ text: trimmed }),
         signal: controller.signal,
       });
 
@@ -93,7 +107,7 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
         return;
       }
 
-      dispatch({ type: 'APPLY_AI_RESUME', resume: data.resume });
+      dispatch({ type: 'APPLY_AI_RESUME', resume: data.resume, startStep: PREVIEW_STEP });
       onImportComplete();
     } catch (err) {
       if (controller.signal.aborted) return;

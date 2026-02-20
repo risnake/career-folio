@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import type { Dispatch } from 'react';
 import type { ResumeSection, ExperienceItem } from '../../../data/resumes';
 import type { BuilderAction, AISuggestion } from '../../../lib/builderTypes';
@@ -23,6 +23,8 @@ function PositionCard({
   updateItem,
   dispatch,
   aiEnhancements,
+  isOpen,
+  onToggle,
 }: {
   item: ExperienceItem;
   itemIndex: number;
@@ -30,15 +32,16 @@ function PositionCard({
   updateItem: (si: number, ii: number, partial: Partial<ExperienceItem>) => void;
   dispatch: Dispatch<BuilderAction>;
   aiEnhancements: Record<string, AISuggestion>;
+  isOpen: boolean;
+  onToggle: () => void;
 }) {
-  const [isOpen, setIsOpen] = useState(true);
   const title = item.title || item.organization || `Position ${itemIndex + 1}`;
 
   return (
     <div className="border border-gray-100 rounded-lg bg-white overflow-hidden">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
       >
         <span className="text-sm font-medium text-gray-700 truncate">{title}</span>
@@ -112,22 +115,31 @@ export default function ExperienceStep({
   dispatch,
   aiEnhancements,
 }: ExperienceStepProps) {
-  const updateSection = useCallback((sectionIndex: number, partial: Partial<ResumeSection>) => {
+  const [openCards, setOpenCards] = useState<Record<string, boolean>>({});
+
+  const sectionKey = (sectionIndex: number, itemIndex: number) => `${sectionIndex}-${itemIndex}`;
+
+  const updateSection = (sectionIndex: number, partial: Partial<ResumeSection>) => {
     dispatch({
       type: 'UPDATE_EXPERIENCE_SECTION',
       index: sectionIndex,
       section: { ...experienceSections[sectionIndex], ...partial },
     });
-  }, [experienceSections, dispatch]);
+  };
 
-  const updateItem = useCallback((sectionIndex: number, itemIndex: number, partial: Partial<ExperienceItem>) => {
+  const updateItem = (sectionIndex: number, itemIndex: number, partial: Partial<ExperienceItem>) => {
     dispatch({
       type: 'UPDATE_EXPERIENCE_ITEM',
       sectionIndex,
       itemIndex,
       item: { ...experienceSections[sectionIndex].items[itemIndex], ...partial },
     });
-  }, [experienceSections, dispatch]);
+  };
+
+  const toggleCard = (sectionIndex: number, itemIndex: number) => {
+    const key = sectionKey(sectionIndex, itemIndex);
+    setOpenCards((prev) => ({ ...prev, [key]: !(prev[key] ?? true) }));
+  };
 
   return (
     <div>
@@ -178,16 +190,21 @@ export default function ExperienceStep({
                   dispatch({ type: 'REMOVE_EXPERIENCE_ITEM', sectionIndex, itemIndex })
                 }
                 addLabel="Add position"
-                renderItem={(item, itemIndex) => (
-                  <PositionCard
-                    item={item}
-                    itemIndex={itemIndex}
-                    sectionIndex={sectionIndex}
-                    updateItem={updateItem}
-                    dispatch={dispatch}
-                    aiEnhancements={aiEnhancements}
-                  />
-                )}
+                renderItem={(item, itemIndex) => {
+                  const key = sectionKey(sectionIndex, itemIndex);
+                  return (
+                    <PositionCard
+                      item={item}
+                      itemIndex={itemIndex}
+                      sectionIndex={sectionIndex}
+                      updateItem={updateItem}
+                      dispatch={dispatch}
+                      aiEnhancements={aiEnhancements}
+                      isOpen={openCards[key] ?? true}
+                      onToggle={() => toggleCard(sectionIndex, itemIndex)}
+                    />
+                  );
+                }}
               />
             </div>
           </div>
