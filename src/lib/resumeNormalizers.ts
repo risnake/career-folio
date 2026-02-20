@@ -71,7 +71,7 @@ export function normalizeResume(raw: any, limits?: { maxSkills?: number; maxAddi
   const contactInput = (raw?.contact ?? {}) as ResumeContact;
   const contact: ResumeContact = {
     email: toCleanString(contactInput.email, 160),
-    phone: toCleanString(contactInput.phone, 60) || undefined,
+    phone: toCleanString(contactInput.phone, 60),
     addresses: toStringArray(contactInput.addresses, 3, 140),
     linkedin: toCleanString(contactInput.linkedin, 200),
     website: toCleanString(contactInput.website, 200),

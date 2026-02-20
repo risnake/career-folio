@@ -87,7 +87,7 @@ export default function ContactStep({ name, contact, errors, dispatch }: Contact
                 dispatch({ type: 'SET_CONTACT', contact: { addresses: updated } });
               }}
               placeholder="123 Main St, City, State ZIP"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:border-terracotta"
             />
           )}
           addLabel="Add address"

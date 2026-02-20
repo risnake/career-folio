@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { Dispatch } from 'react';
 import type { ResumeSection, ExperienceItem } from '../../../data/resumes';
 import type { BuilderAction, AISuggestion } from '../../../lib/builderTypes';
@@ -112,22 +112,22 @@ export default function ExperienceStep({
   dispatch,
   aiEnhancements,
 }: ExperienceStepProps) {
-  const updateSection = (sectionIndex: number, partial: Partial<ResumeSection>) => {
+  const updateSection = useCallback((sectionIndex: number, partial: Partial<ResumeSection>) => {
     dispatch({
       type: 'UPDATE_EXPERIENCE_SECTION',
       index: sectionIndex,
       section: { ...experienceSections[sectionIndex], ...partial },
     });
-  };
+  }, [experienceSections, dispatch]);
 
-  const updateItem = (sectionIndex: number, itemIndex: number, partial: Partial<ExperienceItem>) => {
+  const updateItem = useCallback((sectionIndex: number, itemIndex: number, partial: Partial<ExperienceItem>) => {
     dispatch({
       type: 'UPDATE_EXPERIENCE_ITEM',
       sectionIndex,
       itemIndex,
       item: { ...experienceSections[sectionIndex].items[itemIndex], ...partial },
     });
-  };
+  }, [experienceSections, dispatch]);
 
   return (
     <div>

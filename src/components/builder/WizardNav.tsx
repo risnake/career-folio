@@ -1,12 +1,12 @@
 const STEPS = [
-  { label: 'Template', short: '1' },
-  { label: 'Contact', short: '2' },
-  { label: 'Objective', short: '3' },
-  { label: 'Education', short: '4' },
-  { label: 'Experience', short: '5' },
-  { label: 'Skills', short: '6' },
-  { label: 'Extras', short: '7' },
-  { label: 'Preview', short: '8' },
+  'Template',
+  'Contact',
+  'Objective',
+  'Education',
+  'Experience',
+  'Skills',
+  'Extras',
+  'Preview',
 ];
 
 interface WizardNavProps {
@@ -35,19 +35,19 @@ export default function WizardNav({ currentStep, completedSteps, onStepClick }: 
       </div>
 
       {/* Step indicators */}
-      <ol className="flex items-center gap-1 overflow-x-auto min-w-max">
-        {STEPS.map((step, i) => {
+      <ol className="flex items-center gap-1 overflow-x-auto">
+        {STEPS.map((label, i) => {
           const isActive = i === currentStep;
           const isCompleted = completedSteps.includes(i);
           const isClickable = isCompleted && !isActive;
 
           return (
-            <li key={i} className="flex items-center">
+            <li key={i} className="flex items-center shrink-0">
               <button
                 type="button"
                 onClick={() => isClickable && onStepClick(i)}
                 disabled={!isClickable}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                className={`flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                   isActive
                     ? 'bg-terracotta/10 text-terracotta font-semibold'
                     : isCompleted
@@ -72,12 +72,11 @@ export default function WizardNav({ currentStep, completedSteps, onStepClick }: 
                     i + 1
                   )}
                 </span>
-                <span className="hidden sm:inline">{step.label}</span>
-                <span className="sm:hidden">{step.short}</span>
+                <span className="hidden sm:inline">{label}</span>
               </button>
 
               {i < STEPS.length - 1 && (
-                <div className={`w-4 h-px mx-0.5 ${isCompleted ? 'bg-forest' : 'bg-gray-200'}`} />
+                <div className={`w-4 h-px mx-0.5 hidden sm:block ${isCompleted ? 'bg-forest' : 'bg-gray-200'}`} />
               )}
             </li>
           );

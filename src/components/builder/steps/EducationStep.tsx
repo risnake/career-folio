@@ -34,7 +34,7 @@ function CourseworkInput({ coursework, onChange, id }: { coursework: string[]; o
           onChange(courses);
         }}
         placeholder="Economics, Statistics, Computer Science"
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:border-terracotta"
       />
       <p className="mt-1 text-xs text-gray-500">Separate courses with commas</p>
     </div>
@@ -141,7 +141,7 @@ export default function EducationStep({ education, errors, dispatch }: Education
                         update(index, { details: updated });
                       }}
                       placeholder="Honor, award, or other detail"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:border-terracotta"
                     />
                   )}
                 />

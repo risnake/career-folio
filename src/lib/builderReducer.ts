@@ -173,6 +173,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
 
       return {
         ...state,
+        currentStep: 0,
         template: action.resume.template,
         name: action.resume.name,
         contact,

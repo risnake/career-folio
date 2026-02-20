@@ -2,6 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { normalizeResume, extractJson } from '../../lib/resumeNormalizers';
+import { createRateLimiter, getClientIp } from '../../lib/rateLimiter';
 
 const SYSTEM_PROMPT = `You are a resume parser. Given raw resume text, extract structured data and return it as a JSON object. Do NOT invent or embellish any information — only use what is explicitly stated in the text. If a field is not present in the text, leave it as an empty string or empty array.
 
@@ -54,53 +55,28 @@ Guidelines:
 - Extract skills into category/details pairs where possible
 - Put awards, certifications, activities, interests, and other items into additionalInfo`;
 
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX_REQUESTS = 10;
-
-type RateLimitEntry = { windowStart: number; count: number };
-const rateLimitStore = new Map<string, RateLimitEntry>();
-
-function getClientIp(request: Request): string {
-  return (
-    request.headers.get('cf-connecting-ip') ||
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  );
-}
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitStore.get(ip);
-
-  if (!entry) {
-    rateLimitStore.set(ip, { windowStart: now, count: 1 });
-    return false;
-  }
-
-  if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    entry.windowStart = now;
-    entry.count = 1;
-    rateLimitStore.set(ip, entry);
-    return false;
-  }
-
-  entry.count += 1;
-  rateLimitStore.set(ip, entry);
-  return entry.count > RATE_LIMIT_MAX_REQUESTS;
-}
+const rateLimiter = createRateLimiter(60_000, 10);
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const clientIp = getClientIp(request);
-    if (isRateLimited(clientIp)) {
+    if (rateLimiter.isLimited(clientIp)) {
       return new Response(
         JSON.stringify({ error: 'Too many requests. Please wait a moment and try again.' }),
         { status: 429, headers: { 'Content-Type': 'application/json' } },
       );
     }
 
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
+
     const { text } = body as { text?: string };
 
     if (!text || typeof text !== 'string' || text.trim().length === 0) {

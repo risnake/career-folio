@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { Dispatch } from 'react';
 import type { BuilderAction, BuilderGeneratedResume } from '../../lib/builderTypes';
 
@@ -14,6 +14,11 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => { abortRef.current?.abort(); };
+  }, []);
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -58,11 +63,16 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
     setLoading(true);
     setError('');
 
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
       const res = await fetch('/api/parse-resume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: text.trim() }),
+        signal: controller.signal,
       });
 
       const bodyText = await res.text();
@@ -86,9 +96,10 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
       dispatch({ type: 'APPLY_AI_RESUME', resume: data.resume });
       onImportComplete();
     } catch (err) {
+      if (controller.signal.aborted) return;
       setError(err instanceof Error ? err.message : 'Network error. Please check your connection.');
     } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) setLoading(false);
     }
   }, [text, dispatch, onImportComplete]);
 

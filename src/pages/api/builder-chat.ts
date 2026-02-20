@@ -11,53 +11,13 @@ import {
   normalizeResume,
   extractJson,
 } from '../../lib/resumeNormalizers';
+import { createRateLimiter, getClientIp } from '../../lib/rateLimiter';
 
 type ClientMessage = { role: 'user' | 'assistant'; content: string };
 
 const SYSTEM_PROMPT = `You are a deterministic resume intake assistant. Ask concise follow-up questions until you have enough detail to produce a resume. Never invent facts—if key details are missing, ask for them. When ready, return ONLY a JSON object that matches the required shape (no prose, no markdown). Keep bullets action-oriented and specific, and cap each at 200 characters. Prefer asking another question over guessing.`;
 
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX_REQUESTS = 60;
-
-type RateLimitEntry = { windowStart: number; count: number };
-const rateLimitStore = new Map<string, RateLimitEntry>();
-
-function getClientIp(request: Request): string {
-  const forwardedFor = request.headers.get('x-forwarded-for');
-  if (forwardedFor) {
-    const ip = forwardedFor.split(',')[0]?.trim();
-    if (ip) return ip;
-  }
-
-  const cfConnectingIp = request.headers.get('cf-connecting-ip');
-  if (cfConnectingIp) return cfConnectingIp;
-
-  const realIp = request.headers.get('x-real-ip');
-  if (realIp) return realIp;
-
-  return 'unknown';
-}
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitStore.get(ip);
-
-  if (!entry) {
-    rateLimitStore.set(ip, { windowStart: now, count: 1 });
-    return false;
-  }
-
-  if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    entry.windowStart = now;
-    entry.count = 1;
-    rateLimitStore.set(ip, entry);
-    return false;
-  }
-
-  entry.count += 1;
-  rateLimitStore.set(ip, entry);
-  return entry.count > RATE_LIMIT_MAX_REQUESTS;
-}
+const rateLimiter = createRateLimiter(60_000, 60);
 
 interface BuilderChatReplyQuestion {
   type: 'question';
@@ -136,7 +96,7 @@ function sanitizeStateSnapshot(input: any): BuilderGeneratedResume {
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const clientIp = getClientIp(request);
-    if (isRateLimited(clientIp)) {
+    if (rateLimiter.isLimited(clientIp)) {
       return new Response(JSON.stringify({ error: 'Too many requests. Please slow down.' }), {
         status: 429,
         headers: { 'Content-Type': 'application/json' },

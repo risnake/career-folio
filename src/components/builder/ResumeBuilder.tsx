@@ -56,14 +56,13 @@ export default function ResumeBuilder() {
   }, []);
 
   const handleImportComplete = useCallback(() => {
-    // After import, land on template step so user can confirm the auto-selected template
+    // APPLY_AI_RESUME already resets currentStep to 0
     setCompletedSteps([]);
-    dispatch({ type: 'SET_STEP', step: 0 });
     setShowUpload(false);
   }, []);
 
   const handleStartOver = useCallback(() => {
-    // Reset everything and go back to upload screen
+    // APPLY_AI_RESUME resets all fields and currentStep to 0 in a single dispatch
     setCompletedSteps([]);
     dispatch({ type: 'APPLY_AI_RESUME', resume: {
       template: 'chronological',
@@ -75,7 +74,6 @@ export default function ResumeBuilder() {
       skills: [],
       additionalInfo: [],
     }});
-    dispatch({ type: 'SET_STEP', step: 0 });
     setShowUpload(true);
   }, []);
 

@@ -56,7 +56,7 @@ export default function DateRangeInput({ dates, onChange, namePrefix, error, req
             value={start}
             onChange={(e) => { setStart(e.target.value); commit(e.target.value, end, isPresent); }}
             placeholder="MM/YYYY"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:border-terracotta"
           />
           <p className="mt-0.5 text-xs text-gray-400">Start date</p>
         </div>
@@ -68,7 +68,7 @@ export default function DateRangeInput({ dates, onChange, namePrefix, error, req
             onChange={(e) => { setEnd(e.target.value); commit(start, e.target.value, false); setIsPresent(false); }}
             disabled={isPresent}
             placeholder="MM/YYYY"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:border-terracotta disabled:bg-gray-100"
           />
           <label className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
             <input
