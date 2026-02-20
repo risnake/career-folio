@@ -80,6 +80,26 @@ export default function CombinationPreview({ state }: { state: BuilderState }) {
                   Relevant Coursework: {edu.coursework.join(', ')}
                 </div>
               )}
+              {(() => {
+                const clubs = (edu.clubs || []).filter(
+                  (club) =>
+                    club &&
+                    [club.name, club.position, club.impact].some(
+                      (field) => typeof field === 'string' && field.trim() !== '',
+                    ),
+                );
+                return clubs.length > 0 ? (
+                  <ul className="ml-4 list-disc text-[9pt]">
+                    {clubs.map((club, j) => (
+                      <li key={j}>
+                        <span className="font-semibold">{club.name}</span>
+                        {club.position ? ` — ${club.position}` : ''}
+                        {club.impact ? `: ${club.impact}` : ''}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null;
+              })()}
               {edu.details && edu.details.length > 0 && (
                 <ul className="ml-4 list-disc text-[9pt]">
                   {edu.details.map((d, j) => (

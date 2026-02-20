@@ -113,6 +113,7 @@ export default function ResumeBuilder() {
             education={state.education}
             errors={state.errors}
             dispatch={dispatch}
+            aiEnhancements={state.aiEnhancements}
           />
         );
       case 4:

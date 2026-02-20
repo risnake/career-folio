@@ -3,7 +3,17 @@ import type { BuilderAction } from '../../../lib/builderTypes';
 import FormField from '../shared/FormField';
 import DynamicList from '../shared/DynamicList';
 
-const SKILL_SUGGESTIONS = ['Languages', 'Technical', 'Software', 'Certifications', 'Interests'];
+const SKILL_EXAMPLES = [
+  'Programming: Python, JavaScript/TypeScript, React, Git',
+  'Data: SQL (joins/CTEs), Excel modeling, Tableau or Looker',
+  'Design/Tools: Figma components, Adobe Suite, accessibility checks',
+  'Leadership: Ran weekly standups; mentored peers; onboarded teammates',
+  'Communication: Presented to 50+ audience; wrote documentation and SOPs',
+  'STEM Coursework: AP Calculus BC, AP Physics, MATLAB labs',
+  'Clubs: Robotics (CAD/Arduino), DECA case prep, NHS tutoring hours',
+  'Writing/Research: APA/MLA citations, slide storytelling, interview notes',
+  'Operations: Google Workspace, event logistics, point-of-sale systems',
+];
 
 interface SkillsStepProps {
   skills: { label: string; value: string }[];
@@ -13,23 +23,20 @@ interface SkillsStepProps {
 export default function SkillsStep({ skills, dispatch }: SkillsStepProps) {
   return (
     <div>
-      {skills.length === 0 && (
-        <div className="text-center py-6 mb-4 border border-dashed border-gray-200 rounded-lg">
-          <p className="text-sm text-gray-500 mb-3">No skills added yet. Add a category to get started.</p>
-          <div className="flex flex-wrap justify-center gap-2">
-            {SKILL_SUGGESTIONS.map((label) => (
-              <button
-                key={label}
-                type="button"
-                onClick={() => dispatch({ type: 'ADD_SKILL', label })}
-                className="text-xs px-3 py-1 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400 transition-colors"
-              >
-                + {label}
-              </button>
-            ))}
-          </div>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">Skills</h2>
+      <div className="mb-4">
+        <p className="text-xs text-gray-500">Use these examples as inspiration for categories and phrasing:</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {SKILL_EXAMPLES.map((example) => (
+            <span
+              key={example}
+              className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-700"
+            >
+              {example}
+            </span>
+          ))}
         </div>
-      )}
+      </div>
 
       <DynamicList
         items={skills}
