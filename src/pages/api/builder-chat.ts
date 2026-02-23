@@ -124,7 +124,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const model = runtime?.env?.OPENROUTER_MODEL || import.meta.env.OPENROUTER_MODEL || 'openrouter/auto:free';
+    const model = runtime?.env?.OPENROUTER_MODEL || import.meta.env.OPENROUTER_MODEL || 'openrouter/free';
 
     const payload = {
       model,
