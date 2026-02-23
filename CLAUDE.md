@@ -57,13 +57,13 @@ Custom color palette defined in `src/styles/global.css` via `@theme`:
 **Local Development**: Create a `.dev.vars` file in the project root with:
 ```
 OPENROUTER_API_KEY=your_key_here
-OPENROUTER_MODEL=anthropic/claude-3.5-haiku
+OPENROUTER_MODEL=openrouter/auto:free
 ```
 
 **Production (Cloudflare Pages)**: Set environment variables in the Cloudflare Pages dashboard:
 1. Go to your Cloudflare Pages project → Settings → Environment Variables
 2. Add `OPENROUTER_API_KEY` (required for AI enhance) — your OpenRouter API key
-3. Add `OPENROUTER_MODEL` (optional, defaults to `anthropic/claude-3.5-haiku`) — model identifier
+3. Add `OPENROUTER_MODEL` (optional, defaults to `openrouter/auto:free`) — model identifier
 
 **Important**: The `/api/enhance` endpoint accesses runtime environment variables through `locals.runtime.env` (Cloudflare's runtime binding), NOT through `import.meta.env` which only works for build-time variables. Secrets set in the Cloudflare dashboard are automatically available at runtime through this binding.
 
