@@ -25,6 +25,9 @@ Return ONLY a valid JSON object (no markdown, no explanation) with this exact st
       "dates": "MM/YYYY - MM/YYYY",
       "gpa": "3.8/4.0",
       "coursework": ["Course 1", "Course 2"],
+      "clubs": [
+        { "name": "Club or Organization", "position": "Role title", "progression": "Role progression if any", "impact": "Impact or accomplishments" }
+      ],
       "details": ["Honor or detail"]
     }
   ],
@@ -51,7 +54,8 @@ Return ONLY a valid JSON object (no markdown, no explanation) with this exact st
 Guidelines:
 - Group experience items into logical sections (Work Experience, Leadership, Research, Volunteer, Projects, etc.)
 - Keep bullet points exactly as written — do not rewrite or enhance them
-- For dates, use the format from the resume text as-is
+- For dates, keep the original wording but normalize ranges to "Start - End" with a single dash; use "Present" for ongoing roles
+- If a role clearly belongs to a student club, campus org, fraternity/sorority, or school activity, record it under education.clubs (name, position, progression if multiple titles, and impact) instead of experience
 - Extract skills into category/details pairs where possible
 - Put awards, certifications, activities, interests, and other items into additionalInfo`;
 

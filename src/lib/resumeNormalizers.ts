@@ -1,5 +1,11 @@
 import type { TemplateType, BuilderGeneratedResume } from './builderTypes';
-import type { ResumeContact, Education, ExperienceItem, ResumeSection } from '../data/resumes';
+import type {
+  ResumeContact,
+  Education,
+  ExperienceItem,
+  ResumeSection,
+  EducationClub,
+} from '../data/resumes';
 import { createEmptyEducation, createEmptyExperienceItem, createEmptySection } from './resumeDefaults';
 
 export function toCleanString(value: unknown, max = 400): string {
@@ -23,6 +29,33 @@ export function toTemplate(value: unknown): TemplateType {
   return 'chronological';
 }
 
+function normalizeDateRange(value: unknown): string {
+  const raw = toCleanString(value, 120);
+  if (!raw) return '';
+
+  const parts = raw.split(/\s*(?:-|–|—|to|through|until)\s*/i).filter(Boolean);
+  if (parts.length === 0) return '';
+
+  const [start, ...rest] = parts;
+  const end = rest.join(' ') || '';
+  const endNormalized = end ? (/present/i.test(end) ? 'Present' : end) : '';
+
+  return endNormalized ? `${start} - ${endNormalized}` : start;
+}
+
+function normalizeClubs(list: unknown, maxItems = 12): EducationClub[] {
+  if (!Array.isArray(list)) return [];
+  return list
+    .slice(0, maxItems)
+    .map((club): EducationClub => ({
+      name: toCleanString((club as EducationClub)?.name, 140),
+      position: toCleanString((club as EducationClub)?.position, 140),
+      impact: toCleanString((club as EducationClub)?.impact, 300),
+      progression: toCleanString((club as EducationClub)?.progression, 220),
+    }))
+    .filter((club) => club.name || club.position || club.impact || club.progression);
+}
+
 export function normalizeEducation(list: unknown, maxItems = 6): Education[] {
   if (!Array.isArray(list)) return [createEmptyEducation()];
   const normalized = list.slice(0, maxItems).map((edu): Education => {
@@ -30,10 +63,11 @@ export function normalizeEducation(list: unknown, maxItems = 6): Education[] {
       institution: toCleanString((edu as Education)?.institution, 180),
       location: toCleanString((edu as Education)?.location, 120),
       degree: toCleanString((edu as Education)?.degree, 180),
-      dates: toCleanString((edu as Education)?.dates, 120),
+      dates: normalizeDateRange((edu as Education)?.dates),
       gpa: toCleanString((edu as Education)?.gpa, 40),
       coursework: toStringArray((edu as Education)?.coursework, 10, 80),
       details: toStringArray((edu as Education)?.details, 8),
+      clubs: normalizeClubs((edu as Education)?.clubs),
     };
   });
   return normalized.length > 0 ? normalized : [createEmptyEducation()];
@@ -46,7 +80,7 @@ export function normalizeExperienceItems(list: unknown, maxItems = 8): Experienc
       title: toCleanString((item as ExperienceItem)?.title, 140),
       organization: toCleanString((item as ExperienceItem)?.organization, 160),
       location: toCleanString((item as ExperienceItem)?.location, 140),
-      dates: toCleanString((item as ExperienceItem)?.dates, 120),
+      dates: normalizeDateRange((item as ExperienceItem)?.dates),
       bullets: toStringArray((item as ExperienceItem)?.bullets, 10, 300),
     };
   });
@@ -67,6 +101,7 @@ export function normalizeExperienceSections(list: unknown, maxSections = 6, maxI
 export function normalizeResume(raw: any, limits?: { maxSkills?: number; maxAdditional?: number }): BuilderGeneratedResume {
   const maxSkills = limits?.maxSkills ?? 12;
   const maxAdditional = limits?.maxAdditional ?? 10;
+  const clubKeywords = ['club', 'society', 'council', 'association', 'chapter', 'fraternity', 'sorority'];
 
   const contactInput = (raw?.contact ?? {}) as ResumeContact;
   const contact: ResumeContact = {
@@ -77,13 +112,35 @@ export function normalizeResume(raw: any, limits?: { maxSkills?: number; maxAddi
     website: toCleanString(contactInput.website, 200),
   };
 
+  const education = normalizeEducation(raw?.education);
+  const experienceSections = normalizeExperienceSections(raw?.experienceSections);
+
+  const detectedClubs: EducationClub[] = [];
+  for (const section of experienceSections) {
+    for (const item of section.items) {
+      const text = `${item.title || ''} ${item.organization || ''}`.toLowerCase();
+      if (text && clubKeywords.some((kw) => text.includes(kw))) {
+        detectedClubs.push({
+          name: item.organization || item.title || 'Club role',
+          position: item.title || '',
+          impact: Array.isArray(item.bullets) ? item.bullets.filter(Boolean).join(' ') : '',
+        });
+      }
+    }
+  }
+
+  if (detectedClubs.length > 0 && education.length > 0) {
+    const existingClubs = education[0].clubs ?? [];
+    education[0] = { ...education[0], clubs: [...existingClubs, ...detectedClubs] };
+  }
+
   return {
     template: toTemplate(raw?.template),
     name: toCleanString(raw?.name, 180),
     contact,
     objective: toCleanString(raw?.objective, 600),
-    education: normalizeEducation(raw?.education),
-    experienceSections: normalizeExperienceSections(raw?.experienceSections),
+    education,
+    experienceSections,
     skills: Array.isArray(raw?.skills)
       ? raw.skills
           .slice(0, maxSkills)

@@ -192,6 +192,7 @@ function ClubsInput({
         name: preset?.name ?? '',
         position: preset?.position ?? '',
         impact: preset?.impact ?? '',
+        progression: preset?.progression ?? '',
       },
     ]);
   };
@@ -305,6 +306,22 @@ function ClubsInput({
                   onAccept={(suggested) => updateClub(cIdx, { impact: suggested })}
                 />
               )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Role progression (optional)
+              </label>
+              <p className="text-xs text-gray-500 mb-1">
+                Show growth in the same club, e.g. "Event Manager → Vice President (2022-2024)".
+              </p>
+              <input
+                name={`${idPrefix}-club-progression-${cIdx}`}
+                type="text"
+                value={club.progression ?? ''}
+                onChange={(e) => updateClub(cIdx, { progression: e.target.value })}
+                placeholder="Event Manager → Vice President (2022-2024)"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
           </div>
         )}

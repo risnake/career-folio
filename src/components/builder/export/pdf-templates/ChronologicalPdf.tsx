@@ -70,7 +70,7 @@ const s = StyleSheet.create({
 });
 
 export default function ChronologicalPdf({ state }: { state: BuilderState }) {
-  const { name, contact, education, experienceSections, skills, additionalInfo } = state;
+  const { name, contact, objective, education, experienceSections, skills, additionalInfo } = state;
 
   const contactLine = [
     contact.email,
@@ -88,6 +88,13 @@ export default function ChronologicalPdf({ state }: { state: BuilderState }) {
         <Text style={s.name}>{name || 'Your Name'}</Text>
         {contactLine && <Text style={s.contact}>{contactLine}</Text>}
         <View style={s.hr} />
+
+        {objective ? (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Objective</Text>
+            <Text style={{ fontSize: 9.5 }}>{objective}</Text>
+          </View>
+        ) : null}
 
         {/* Education */}
         {education.length > 0 && (
@@ -115,6 +122,7 @@ export default function ChronologicalPdf({ state }: { state: BuilderState }) {
                       club &&
                       (club.name?.toString().trim() ||
                         club.position?.toString().trim() ||
+                        club.progression?.toString().trim() ||
                         club.impact?.toString().trim()),
                   )
                   .map((club, j) => (
@@ -123,6 +131,7 @@ export default function ChronologicalPdf({ state }: { state: BuilderState }) {
                       <Text style={s.bulletText}>
                         <Text style={s.bold}>{club.name}</Text>
                         {club.position ? ` — ${club.position}` : ''}
+                        {club.progression ? ` (${club.progression})` : ''}
                         {club.impact ? `: ${club.impact}` : ''}
                       </Text>
                     </View>

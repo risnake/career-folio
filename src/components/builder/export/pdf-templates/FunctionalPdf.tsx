@@ -149,6 +149,7 @@ export default function FunctionalPdf({ state }: { state: BuilderState }) {
                       club &&
                       (club.name?.toString().trim() ||
                         club.position?.toString().trim() ||
+                        club.progression?.toString().trim() ||
                         club.impact?.toString().trim()),
                   )
                   .map((club, j) => (
@@ -157,6 +158,7 @@ export default function FunctionalPdf({ state }: { state: BuilderState }) {
                       <Text style={s.bulletText}>
                         <Text style={s.bold}>{club.name}</Text>
                         {club.position ? ` — ${club.position}` : ''}
+                        {club.progression ? ` (${club.progression})` : ''}
                         {club.impact ? `: ${club.impact}` : ''}
                       </Text>
                     </View>

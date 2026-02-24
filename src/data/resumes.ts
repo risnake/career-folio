@@ -21,6 +21,7 @@ export interface EducationClub {
   name: string;
   position?: string;
   impact?: string;
+  progression?: string;
 }
 
 export interface ExperienceItem {
