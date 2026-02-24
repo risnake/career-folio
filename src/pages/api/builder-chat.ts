@@ -124,12 +124,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const model = runtime?.env?.OPENROUTER_MODEL || import.meta.env.OPENROUTER_MODEL || 'meta-llama/llama-3.1-8b-instruct:free';
+    const model = runtime?.env?.OPENROUTER_MODEL || import.meta.env.OPENROUTER_MODEL || 'openrouter/free';
 
     const payload = {
       model,
       temperature: 0,
-      max_tokens: 2048,
+      max_tokens: 32000,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         {

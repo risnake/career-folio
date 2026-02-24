@@ -122,7 +122,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       ? `${inputText}\n\nContext: ${context}`
       : inputText;
 
-    const model = runtime?.env?.OPENROUTER_MODEL || import.meta.env.OPENROUTER_MODEL || 'meta-llama/llama-3.1-8b-instruct:free';
+    const model = runtime?.env?.OPENROUTER_MODEL || import.meta.env.OPENROUTER_MODEL || 'openrouter/free';
 
     const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       body: JSON.stringify({
         model,
         temperature: 0.3,
-        max_tokens: 2048,
+        max_tokens: 32000,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userContent },

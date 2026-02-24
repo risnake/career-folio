@@ -47,7 +47,7 @@ Create a `.dev.vars` file in the project root:
 
 ```
 OPENROUTER_API_KEY=your_openrouter_api_key
-OPENROUTER_MODEL=anthropic/claude-3.5-haiku
+OPENROUTER_MODEL=openrouter/free
 ```
 
 The `.dev.vars` file is gitignored and used by Wrangler for local development.
@@ -58,7 +58,7 @@ The `.dev.vars` file is gitignored and used by Wrangler for local development.
 2. Navigate to Settings → Environment Variables
 3. Add the following variables:
    - `OPENROUTER_API_KEY` - Your OpenRouter API key (required)
-   - `OPENROUTER_MODEL` - Model identifier (optional, defaults to `anthropic/claude-3.5-haiku`)
+   - `OPENROUTER_MODEL` - Model identifier (optional, defaults to `openrouter/free`)
 4. Redeploy your application for the changes to take effect
 
 **Note**: Environment variables in Cloudflare Pages are accessed at runtime through `locals.runtime.env`, not at build time. Make sure to set them as **Environment Variables** (not Build Variables) in the Cloudflare dashboard.
