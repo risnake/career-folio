@@ -114,7 +114,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       body: JSON.stringify({
         model,
         temperature: 0,
-        max_tokens: 8192,
+        max_tokens: 32000,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: `Parse this resume:\n\n${text.trim()}` },

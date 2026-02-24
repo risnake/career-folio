@@ -129,7 +129,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const payload = {
       model,
       temperature: 0,
-      max_tokens: 2048,
+      max_tokens: 32000,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         {

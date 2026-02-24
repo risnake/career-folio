@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       body: JSON.stringify({
         model,
         temperature: 0.3,
-        max_tokens: 2048,
+        max_tokens: 32000,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userContent },
