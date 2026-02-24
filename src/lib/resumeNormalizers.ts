@@ -33,7 +33,9 @@ function normalizeDateRange(value: unknown): string {
   const raw = toCleanString(value, 120);
   if (!raw) return '';
 
-  const parts = raw.split(/\s*(?:-|–|—|to|through|until)\s*/i).filter(Boolean);
+  const parts = raw
+    .split(/(?:\s*[-–—]\s*|\s+\b(?:to|through|until)\b\s+)/i)
+    .filter(Boolean);
   if (parts.length === 0) return '';
 
   const [start, ...rest] = parts;
@@ -113,21 +115,29 @@ export function normalizeResume(raw: any, limits?: { maxSkills?: number; maxAddi
   };
 
   const education = normalizeEducation(raw?.education);
-  const experienceSections = normalizeExperienceSections(raw?.experienceSections);
-
   const detectedClubs: EducationClub[] = [];
-  for (const section of experienceSections) {
-    for (const item of section.items) {
-      const text = `${item.title || ''} ${item.organization || ''}`.toLowerCase();
-      if (text && clubKeywords.some((kw) => text.includes(kw))) {
-        detectedClubs.push({
-          name: item.organization || item.title || 'Club role',
-          position: item.title || '',
-          impact: Array.isArray(item.bullets) ? item.bullets.filter(Boolean).join(' ') : '',
-        });
-      }
-    }
-  }
+  const experienceSectionsRaw = normalizeExperienceSections(raw?.experienceSections);
+  const experienceSectionsMapped = experienceSectionsRaw
+    .map((section) => {
+      const remainingItems = section.items.filter((item) => {
+        const text = `${item.title || ''} ${item.organization || ''}`.toLowerCase();
+        const isClub = text && clubKeywords.some((kw) => text.includes(kw));
+        if (isClub) {
+          detectedClubs.push({
+            name: item.organization || item.title || 'Club role',
+            position: item.title || '',
+            impact: Array.isArray(item.bullets) ? item.bullets.filter(Boolean).join(' ') : '',
+            progression: '',
+          });
+        }
+        return !isClub;
+      });
+      return { ...section, items: remainingItems };
+    })
+    .filter((section) => section.items.length > 0 || section.title)
+    .map((section) => (section.items.length === 0 ? { ...section, items: [createEmptyExperienceItem()] } : section));
+  const experienceSections =
+    experienceSectionsMapped.length > 0 ? experienceSectionsMapped : [createEmptySection()];
 
   if (detectedClubs.length > 0 && education.length > 0) {
     const existingClubs = education[0].clubs ?? [];

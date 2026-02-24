@@ -11,7 +11,7 @@ interface DateRangeInputProps {
 export default function DateRangeInput({ dates, onChange, namePrefix, error, required }: DateRangeInputProps) {
   const parse = (d: string) => {
     if (!d) return { s: '', e: '' };
-    const parts = d.split(/\s*(?:-|–|—|to|through|until)\s*/i).filter(Boolean);
+    const parts = d.split(/(?:\s*[-–—]\s*|\s+\b(?:to|through|until)\b\s+)/i).filter(Boolean);
     const [start, end] = parts;
     return { s: start || '', e: end || '' };
   };
