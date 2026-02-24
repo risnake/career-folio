@@ -3,7 +3,7 @@ import type { Dispatch } from 'react';
 import type { BuilderAction, BuilderGeneratedResume } from '../../lib/builderTypes';
 
 const MAX_TEXT_LENGTH = 15000;
-const PREVIEW_STEP = 7;
+const START_STEP = 0;
 
 interface ResumeUploadProps {
   dispatch: Dispatch<BuilderAction>;
@@ -107,7 +107,7 @@ export default function ResumeUpload({ dispatch, onStartFresh, onImportComplete 
         return;
       }
 
-      dispatch({ type: 'APPLY_AI_RESUME', resume: data.resume, startStep: PREVIEW_STEP });
+      dispatch({ type: 'APPLY_AI_RESUME', resume: data.resume, startStep: START_STEP });
       onImportComplete();
     } catch (err) {
       if (controller.signal.aborted) return;

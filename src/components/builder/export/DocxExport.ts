@@ -108,7 +108,7 @@ function buildEducationParagraphs(education: Education[]): Paragraph[] {
         if (!club?.name || club.name.trim() === '') {
           continue;
         }
-        const line = `${club.name}${club.position ? ` — ${club.position}` : ''}${club.impact ? `: ${club.impact}` : ''}`;
+        const line = `${club.name}${club.position ? ` — ${club.position}` : ''}${club.progression ? ` (${club.progression})` : ''}${club.impact ? `: ${club.impact}` : ''}`;
         paras.push(bulletParagraph(line));
       }
     }

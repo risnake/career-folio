@@ -1,7 +1,7 @@
 import type { BuilderState } from '../../../lib/builderTypes';
 
 export default function ChronologicalPreview({ state }: { state: BuilderState }) {
-  const { name, contact, education, experienceSections, skills, additionalInfo } = state;
+  const { name, contact, objective, education, experienceSections, skills, additionalInfo } = state;
 
   return (
     <div className="font-serif text-[11pt] leading-snug text-black">
@@ -24,6 +24,13 @@ export default function ChronologicalPreview({ state }: { state: BuilderState })
       </div>
 
       <hr className="my-3 border-black" />
+
+      {objective && (
+        <section className="mb-3">
+          <h2 className="mb-1 border-b border-black text-[10pt] font-bold uppercase">Objective</h2>
+          <p className="text-[9.5pt]">{objective}</p>
+        </section>
+      )}
 
       {/* Education */}
       {education.length > 0 && (
@@ -53,7 +60,7 @@ export default function ChronologicalPreview({ state }: { state: BuilderState })
                 const clubs = (edu.clubs || []).filter(
                   (club) =>
                     club &&
-                    [club.name, club.position, club.impact].some(
+                    [club.name, club.position, club.impact, club.progression].some(
                       (field) => typeof field === 'string' && field.trim() !== '',
                     ),
                 );
@@ -63,6 +70,7 @@ export default function ChronologicalPreview({ state }: { state: BuilderState })
                       <li key={j}>
                         <span className="font-semibold">{club.name}</span>
                         {club.position ? ` — ${club.position}` : ''}
+                        {club.progression ? ` (${club.progression})` : ''}
                         {club.impact ? `: ${club.impact}` : ''}
                       </li>
                     ))}

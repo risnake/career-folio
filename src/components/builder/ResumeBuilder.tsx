@@ -14,7 +14,6 @@ import AdditionalInfoStep from './steps/AdditionalInfoStep';
 import PreviewStep from './steps/PreviewStep';
 
 const TOTAL_STEPS = 8;
-const PREVIEW_STEP = TOTAL_STEPS - 1;
 
 const STEP_INFO: { title: string; subtitle: string }[] = [
   { title: 'Choose a template', subtitle: 'Pick a layout that fits your experience and career goals.' },
@@ -31,6 +30,7 @@ export default function ResumeBuilder() {
   const [state, dispatch] = useReducer(builderReducer, undefined, createInitialState);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [showUpload, setShowUpload] = useState(true);
+  const [importNotice, setImportNotice] = useState(false);
 
   const handleNext = useCallback(() => {
     const { isValid, errors } = validateStep(state.currentStep, state);
@@ -53,14 +53,15 @@ export default function ResumeBuilder() {
   }, []);
 
   const handleStartFresh = useCallback(() => {
+    setImportNotice(false);
     setShowUpload(false);
   }, []);
 
   const handleImportComplete = useCallback(() => {
-    const completed = Array.from({ length: PREVIEW_STEP }, (_, i) => i);
-    setCompletedSteps(completed);
-    dispatch({ type: 'SET_STEP', step: PREVIEW_STEP });
+    setCompletedSteps([]);
+    dispatch({ type: 'SET_STEP', step: 0 });
     setShowUpload(false);
+    setImportNotice(true);
   }, []);
 
   const handleStartOver = useCallback(() => {
@@ -76,6 +77,7 @@ export default function ResumeBuilder() {
       additionalInfo: [],
     }});
     setShowUpload(true);
+    setImportNotice(false);
   }, []);
 
   if (showUpload) {
@@ -140,6 +142,25 @@ export default function ResumeBuilder() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {importNotice && (
+        <div className="mb-4 flex items-start gap-3 rounded-lg border border-forest/30 bg-forest/5 px-4 py-3 text-sm text-forest">
+          <svg className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div className="flex-1">
+            <p className="font-medium text-forest">Resume imported</p>
+            <p className="text-gray-700">Everything is editable. Start at step 1 to review and adjust your details.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setImportNotice(false)}
+            className="text-xs text-forest underline-offset-2 hover:underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <WizardNav
         currentStep={state.currentStep}
         completedSteps={completedSteps}

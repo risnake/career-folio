@@ -10,8 +10,10 @@ interface DateRangeInputProps {
 
 export default function DateRangeInput({ dates, onChange, namePrefix, error, required }: DateRangeInputProps) {
   const parse = (d: string) => {
-    const parts = d.split(' - ');
-    return { s: parts[0] || '', e: parts[1] || '' };
+    if (!d) return { s: '', e: '' };
+    const parts = d.split(/(?:\s*[-–—]\s*|\s+\b(?:to|through|until)\b\s+)/i).filter(Boolean);
+    const [start, end] = parts;
+    return { s: start || '', e: end || '' };
   };
   const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const currentYear = new Date().getFullYear();
