@@ -10,7 +10,7 @@ export interface AISuggestion {
 }
 
 export interface BuilderGeneratedResume {
-  template: TemplateType;
+  template: TemplateType | null;
   name: string;
   contact: ResumeContact;
   objective: string;
